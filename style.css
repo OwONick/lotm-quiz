@@ -219,7 +219,7 @@ h1 {
 
 /* --- 響應式設計 --- */
 @media (min-width: 768px) {
-  .btn-grid {
+ .btn-grid {
         grid-template-columns: 1fr 1fr;
     }
 }

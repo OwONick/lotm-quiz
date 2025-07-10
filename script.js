@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         paragon: { name: "通識者途徑：現實的創造者", personality: "你是個務實的理想主義者，一個天生的工匠和發明家。你相信知識的價值在於應用，你熱衷於親手將理論和藍圖變為現實。你享受創造的過程，無論是精密的機械，還是神奇的煉金藥劑。你動手能力極強，富有創造力，並堅信技術能夠改變世界。", powers: "你的雙手能創造奇蹟。你精通各種「機械製造」和「物品製作」。你是「鍊金術」的大師，能點石成金。你的發明創造能夠推動文明的進步。在高處，你將執掌「科技」與「創造」的權柄，成為一個能用雙手塑造未來的神。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 30 V 10 M50 70 V 90 M30 50 H 10 M70 50 H 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
         wheel_of_fortune: { name: "命運之輪途徑：概率的賭徒", personality: "你的人生是一場巨大的賭博。你對命運和概率有著天生的敏感，並敢於在關鍵時刻押上一切。你可能時而極度幸運，時而又倒楣透頂。你的人生充滿了起伏和不確定性，但你卻樂在其中。你相信，只要活得夠久，總有機會翻盤。你是一個在命運的輪盤上跳舞的賭徒，既瘋狂又清醒。", powers: "你掌控著虛無縹緲的「命運」。你能讓自己變得極度「幸運」，也能給敵人帶去「災禍」。你能直接操縱「概率」，讓小概率事件必然發生。在高處，你甚至能「重啟」命運，讓時間倒流，回到某個關鍵的抉擇點，成為真正的命運之主。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 10 V 90 M10 50 H 90 M22 22 L 78 78 M22 78 L 78 22" stroke="var(--color-primary)" stroke-width="2" fill="none"/></svg>` },
         mother: { name: "母親途徑：生命的孕育者", personality: "你充滿了母性的光輝，對生命懷有深沉的愛與關懷。你溫柔、善良、富有同情心，是天生的滋養者和保護者。你與自然有著緊密的聯繫，熱愛土地和生命。你相信生命的頑強與美好，並願意為守護這份美好而付出一切。你的存在本身，就是豐饒與希望的象徵。", powers: "你是生命與自然的化身。你能促進植物的瘋狂生長，能治療最嚴重的傷勢。你擁有無比旺盛的「生命力」，極難被殺死。你的領域之內，萬物復甦，生機盎然。在高處，你就是大地本身，是所有生命的源頭。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 90 C 20 60, 20 40, 50 10 C 80 40, 80 60, 50 90 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 50 m -10, 0 a 10,10 0 1,0 20,0 a 10,10 0 1,0 -20,0" fill="var(--color-primary)"/></svg>` },
-        moon: { name: "月亮途徑：變幻的誘惑者", personality: "你是一個充滿神秘魅力和雙重性的個體。你像月亮一樣，既有皎潔美麗的一面，也有引人瘋狂的陰暗面。你擅長利用自己的魅力來「蠱惑」人心，達到自己的目的。你性格多變，令人難以捉摸。你享受在不同身份和姿態之間切換的樂趣，對血液和黑夜有著特殊的偏好。", powers: "你駕馭著月亮的力量。你能在月光下獲得極大的增幅，並能化身為月光躲避攻擊。你能製造強大的幻術，也能「召喚」來自靈界的強大生物。你擁有「吸血鬼」的特質，能透過血液轉化僕從，並擁有強大的恢復能力。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M 50 10 A 40 40 0 1 0 50 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M 50 20 A 30 30 0 1 0 50 80" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
+        moon: { name: "月亮途徑：變幻的誘惑者", personality: "你是一個充滿神秘魅力和雙重性的個體。你像月亮一樣，既有皎潔美麗的一面，也有引人瘋狂的陰暗面。你擅長利用自己的魅力來「蠱惑」人心，達到自己的目的。你性格多變，令人難以捉摸。你享受在不同身份和姿態之間切換的樂趣，對血液和黑夜有著特殊的偏好。", powers: "你駕馭著月亮的力量。你能在月光下獲得極大的增幅，並能化身為月光躲避攻擊。你能製造強大的幻術，也能「召喚」來自靈界的強大生物。你擁有「吸血鬼」の特質，能透過血液轉化僕從，並擁有強大的恢復能力。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M 50 10 A 40 40 0 1 0 50 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M 50 20 A 30 30 0 1 0 50 80" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
         abyss: { name: "深淵途徑：欲望的沉淪者", personality: "你選擇了直面內心最黑暗的欲望。你不再壓抑，而是選擇徹底地釋放和沉淪。你從罪惡、恐懼和墮落中汲取力量和快感。你可能是個殘忍的暴徒，也可能是個優雅的惡魔，但本質都是一樣的——你是欲望的奴隸。你蔑視道德和秩序，只追隨自己內心的衝動。", powers: "你是行走的「深淵」。你的話語能引發他人內心的「欲望」，你的存在能「腐化」周圍的環境。你能散播「恐懼」，召喚來自深淵的「惡魔」。你越是墮落，力量就越是強大，最終，你自身將成為一個污染世界的腐蝕之源。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L50 20 L80 80 Z" stroke="var(--color-primary)" stroke-width="3" fill="none" transform="rotate(180 50 50)"/><circle cx="50" cy="50" r="5" fill="var(--color-accent)"/></svg>` },
         chained: { name: "被縛者途徑：苦痛的修行者", personality: "你選擇了一條與欲望完全相反的道路——束縛與忍耐。你的人生充滿了各種各樣的痛苦和詛咒，但你並未被其擊垮，反而學會了在束縛中磨練自己的意志。你像一個苦行僧，用痛苦來淨化靈魂。你沉默寡言，意志力極其堅定，對痛苦有著超乎常人的忍耐力。你相信，真正的力量來自於對自我的絕對控制。", powers: "你的力量源於你所承受的「詛咒」和「痛苦」。你能將施加在自己身上的傷害轉移或反彈給敵人。你能製造沒有生命的「傀儡」為你戰鬥。在高處，你能將敵人「變形」為無害的動物，並將自己化為詛咒的源頭，成為一個觸碰不得的禁忌存在。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M30 50 H 70 M50 30 V 70" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
         black_emperor: { name: "黑皇帝途徑：秩序的扭曲者", personality: "你是個天生的權謀家。你看透了秩序的本質——它只是強者用來統治弱者的工具。你熱衷於制定複雜、繁瑣的「規則」，不是為了維護公平，而是為了在其中留下後門和漏洞，供自己利用。你擅長鑽營、賄賂和利用法律，最終目標是建立一個完全服務於你個人意志的、扭曲的帝國。", powers: "你是規則的漏洞。你能「扭曲」現實中的規則，也能利用「賄賂」來影響非凡能力的效果。你最核心的能力是「復活」。只要你預先建造的陵墓和制定的規則還在，你就幾乎是不死的。想徹底殺死一個黑皇帝，最好的辦法就是扶持一個新的黑皇帝來取代他。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L 50 20 L 80 80 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M35 60 H 65" stroke="var(--color-primary)" stroke-width="3"/></svg>` },
@@ -168,4 +168,153 @@ document.addEventListener('DOMContentLoaded', () => {
             { text: "愚蠢的行為，應不惜一切代價保護自己。", pathways: ["error", "abyss"] },
             { text: "崇高的美德，是愛的最高體現。", pathways: ["sun", "mother"] }
         ]},
-        { question: "一個完美的社會應該基於：
+        { question: "一個完美的社會應該基於：", answers: [
+            { text: "絕對的秩序與不可動搖的法律。", pathways: ["justiciar"] },
+            { text: "個體的完全自由與自我實現。", pathways: ["door", "moon"] },
+            { text: "知識的共享與科技的進步。", pathways: ["paragon", "white_tower"] },
+            { text: "強大的集體與共同的信仰。", pathways: ["sun", "red_priest"] }
+        ]},
+        { question: "你更喜歡哪種風景？", answers: [
+            { text: "狂風暴雨的大海。", pathways: ["tyrant"] },
+            { text: "寧靜幽深的森林。", pathways: ["mother", "darkness"] },
+            { text: "繁星滿天的夜空。", pathways: ["hermit", "door"] },
+            { text: "黎明或黃昏時分的地平線。", pathways: ["twilight_giant"] }
+        ]},
+        { question: "你認為「欺騙」是：", answers: [
+            { text: "一種不道德的行為。", pathways: ["sun", "justiciar"] },
+            { text: "一種高超的智慧和藝術。", pathways: ["fool"] },
+            { text: "在特定情況下必要的生存工具。", pathways: ["error", "demoness"] },
+            { text: "一種有趣的遊戲。", pathways: ["error", "fool"] }
+        ]},
+        { question: "當你面對一個強大的敵人時，你會：", answers: [
+            { text: "正面迎戰，用力量和勇氣將其擊敗。", pathways: ["tyrant", "twilight_giant"] },
+            { text: "尋找其弱點，用計謀智取。", pathways: ["visionary", "error"] },
+            { text: "暫時撤退，尋找盟友或更強大的力量。", pathways: ["red_priest", "door"] },
+            { text: "嘗試與其溝通，看是否有和平解決的可能。", pathways: ["sun", "mother"] }
+        ]},
+        { question: "你對「傳統」的態度是：", answers: [
+            { text: "值得尊重和傳承的智慧。", pathways: ["death", "sun"] },
+            { text: "需要被質疑和挑戰的束縛。", pathways: ["red_priest", "abyss"] },
+            { text: "可以被利用來達到目的的工具。", pathways: ["black_emperor"] },
+            { text: "只是歷史的一部分，沒有特別的意義。", pathways: ["fool", "door"] }
+        ]},
+        { question: "什麼樣的知識最吸引你？", answers: [
+            { text: "關於宇宙和星辰的奧秘。", pathways: ["hermit", "door"] },
+            { text: "關於人性和心理的深層秘密。", pathways: ["visionary"] },
+            { text: "關於如何製造和創造的實用技術。", pathways: ["paragon"] },
+            { text: "關於歷史和過去的被遺忘的故事。", pathways: ["fool", "death"] }
+        ]},
+        { question: "你如何定義「邪惡」？", answers: [
+            { text: "違反神聖律法的行為。", pathways: ["justiciar", "sun"] },
+            { text: "故意給他人帶來痛苦和災難。", pathways: ["demoness"] },
+            { text: "極度的自私和對他人的漠視。", pathways: ["abyss", "error"] },
+            { text: "破壞自然秩序和生命和諧。", pathways: ["mother", "twilight_giant"] }
+        ]},
+        { question: "如果你必須選擇一種詛咒，你會選擇：", answers: [
+            { text: "永遠承受身體上的痛苦。", pathways: ["chained", "hanged_man"] },
+            { text: "永遠被他人誤解和憎恨。", pathways: ["demoness", "abyss"] },
+            { text: "永遠無法停留在一處，必須不斷漂泊。", pathways: ["door"] },
+            { text: "永遠無法說謊。", pathways: ["justiciar", "sun"] }
+        ]},
+        { question: "你認為最可靠的盟友是：", answers: [
+            { text: "與你有共同信仰和目標的人。", pathways: ["sun", "red_priest"] },
+            { text: "被你的利益或力量所束縛的人。", pathways: ["black_emperor", "hanged_man"] },
+            { text: "與你有深厚情感連結的家人或朋友。", pathways: ["mother", "twilight_giant"] },
+            { text: "你自己，因為只有自己才不會背叛。", pathways: ["hermit", "darkness"] }
+        ]},
+        { question: "走在人生的道路上，你更像是一個：", answers: [
+            { text: "堅定地走向終點的朝聖者。", pathways: ["death", "justiciar"] },
+            { text: "享受沿途風景的旅行者。", pathways: ["door", "moon"] },
+            { text: "不斷開闢新道路的探險家。", pathways: ["red_priest", "paragon"] },
+            { text: "躲在陰影中，觀察其他行人的潛行者。", pathways: ["visionary", "darkness"] }
+        ]}
+    ];
+
+    function initScores() {
+        scores = {};
+        for (const key in pathways) {
+            scores[key] = 0;
+        }
+    }
+
+    function startQuiz() {
+        startScreen.classList.add('hidden');
+        resultScreen.classList.add('hidden');
+        questionScreen.classList.remove('hidden');
+        currentQuestionIndex = 0;
+        initScores();
+        showQuestion();
+    }
+
+    function showQuestion() {
+        resetState();
+        const currentQuestion = questions[currentQuestionIndex];
+        questionText.innerText = currentQuestion.question;
+        questionNumber.innerText = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
+        progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+
+        currentQuestion.answers.forEach(answer => {
+            const button = document.createElement('button');
+            button.innerText = answer.text;
+            button.classList.add('quiz-btn');
+            button.dataset.pathways = JSON.stringify(answer.pathways);
+            button.addEventListener('click', selectAnswer);
+            answerButtons.appendChild(button);
+        });
+    }
+
+    function resetState() {
+        while (answerButtons.firstChild) {
+            answerButtons.removeChild(answerButtons.firstChild);
+        }
+    }
+
+    function selectAnswer(e) {
+        const selectedPathways = JSON.parse(e.target.dataset.pathways);
+        selectedPathways.forEach(pathway => {
+            if (scores[pathway]!== undefined) {
+                scores[pathway]++;
+            }
+        });
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function calculateResult() {
+        let maxScore = -1;
+        let resultPathway = '';
+        for (const pathway in scores) {
+            if (scores[pathway] > maxScore) {
+                maxScore = scores[pathway];
+                resultPathway = pathway;
+            }
+        }
+        return resultPathway;
+    }
+
+    function showResult() {
+        questionScreen.classList.add('hidden');
+        resultScreen.classList.remove('hidden');
+
+        const resultKey = calculateResult();
+        const resultData = pathways[resultKey];
+
+        resultSymbolContainer.innerHTML = resultData.symbol;
+        resultTitle.innerText = resultData.name;
+        resultPersonality.innerText = resultData.personality;
+        resultPowers.innerText = resultData.powers;
+    }
+
+    function restartQuiz() {
+        resultScreen.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+    }
+
+    startBtn.addEventListener('click', startQuiz);
+    restartBtn.addEventListener('click', restartQuiz);
+});
