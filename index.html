@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詭秘之主：非凡途徑心理評估</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div id="welcome-screen">
+            <h1>詭秘之主</h1>
+            <h2>非凡途徑心理評估</h2>
+            <p>蒸汽與機械的浪潮中，誰能觸及非凡？歷史和黑暗的迷霧裡，又是誰在耳語？</p>
+            <p>本評估將透過一系列情境抉擇，探尋你靈魂深處的傾向，揭示你最有可能踏上的非凡途徑。請遵循你的直覺，做出最真實的選擇。</p>
+            <button id="start-btn">開始評估</button>
+        </div>
+
+        <div id="quiz-screen" class="hidden">
+            <div id="question-container">
+                <p id="question-text"></p>
+            </div>
+            <div id="answer-buttons" class="btn-grid">
+                </div>
+            <div id="progress-container">
+                <p id="progress-text"></p>
+            </div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h2>你的評估結果</h2>
+            <h3 id="pathway-name"></h3>
+            <p id="pathway-honorific" class="honorific"></p>
+            <h4>核心哲學</h4>
+            <p id="pathway-philosophy"></p>
+            <h4>心理檔案</h4>
+            <p id="pathway-profile"></p>
+            <h4>關鍵能力</h4>
+            <p id="pathway-abilities"></p>
+            <button id="restart-btn">重新評估</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
