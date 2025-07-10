@@ -1,269 +1,432 @@
-// DOM 元素獲取
-const startBtn = document.getElementById('start-btn');
-const restartBtn = document.getElementById('restart-btn');
-const welcomeScreen = document.getElementById('welcome-screen');
-const quizScreen = document.getElementById('quiz-screen');
-const resultScreen = document.getElementById('result-screen');
-const questionText = document.getElementById('question-text');
-const answerButtons = document.getElementById('answer-buttons');
-const progressText = document.getElementById('progress-text');
+document.addEventListener('DOMContentLoaded', () => {
 
-// 結果顯示元素
-const pathwayName = document.getElementById('pathway-name');
-const pathwayPhilosophy = document.getElementById('pathway-philosophy');
-const pathwayProfile = document.getElementById('pathway-profile');
+    // --- 資料源 ---
+    // 途徑資料庫 (根據途徑占卜矩陣)
+    const pathways = [
+        { name: "占卜家", tarot: "0 - 愚者", scores: { order: 1, secrecy: 7, humanity: 3, intellect: 8 }, ethos: "愚弄歷史，操控靈線，創造奇蹟。", description: "你行走在歷史的縫隙中，窺探著命運的絲線。世界於你而言是一場宏大的戲劇，而你既是觀眾，也是導演。奇蹟是你手中的戲法，愚弄是你對抗荒謬的武器。", adjacent: ["學徒", "偷盜者"], image: "https://path-to-your-image/fool.jpg" },
+        { name: "學徒", tarot: "I - 魔術師", scores: { order: 3, secrecy: 5, humanity: 2, intellect: 7 }, ethos: "記錄萬物，穿梭虛空，探索未知。", description: "知識的殿堂為你敞開，空間的奧秘在你指尖展開。你是一位永恆的學習者與旅行者，通過記錄與複製非凡，你將整個世界納入你的魔法書頁之中。", adjacent: ["占卜家", "偷盜者"], image: "https://path-to-your-image/magician.jpg" },
+        { name: "偷盜者", tarot: "VI - 戀人", scores: { order: -8, secrecy: 6, humanity: -7, intellect: 5 }, ethos: "竊取概念，欺瞞命運，寄生規則。", description: "規則並非用來遵守，而是用來利用的。你是一位行走在陰影中的欺詐師，能夠竊取他人的思想、能力甚至時間。對你而言，整個世界都是一個等待被解密的巨大鎖孔。", adjacent: ["占卜家", "學徒"], image: "https://path-to-your-image/lovers.jpg" },
+        { name: "觀眾", tarot: "VIII - 正義", scores: { order: 6, secrecy: 8, humanity: 5, intellect: 9 }, ethos: "觀察人心，編織夢境，空想現實。", description: "你擁有洞悉人心的雙眼，能輕易看穿他人的偽裝。你遊走於現實與夢境的邊界，既是冷靜的旁觀者，也是心靈的操縱師。最終，你所構想的一切，都將成為現實。", adjacent: ["太陽", "倒吊人", "白塔"], image: "https://path-to-your-image/justice.jpg" },
+        { name: "歌頌者", tarot: "XIX - 太陽", scores: { order: 8, secrecy: -7, humanity: 6, intellect: -3 }, ethos: "頌揚光明，訂立契約，淨化邪穢。", description: "你是光明的使者，是勇氣與秩序的化身。你的歌聲能驅散恐懼，你的光芒能淨化一切污穢。你通過神聖的契約維護正義，是黑暗中永不熄滅的希望。", adjacent: ["觀眾", "倒吊人", "白塔"], image: "https://path-to-your-image/sun.jpg" },
+        { name: "秘祈人", tarot: "XII - 倒吊人", scores: { order: -5, secrecy: 8, humanity: -8, intellect: 4 }, ethos: "侍奉隱秘，放牧靈魂，墮落救贖。", description: "你聆聽來自星界彼端的耳語，以犧牲換取力量。你行走在墮落與救贖的邊緣，通過獻祭自我或他人，來維繫那不可言說的平衡。你的道路充滿痛苦，也充滿力量。", adjacent: ["觀眾", "太陽", "白塔"], image: "https://path-to-your-image/hanged_man.jpg" },
+        { name: "閱讀者", tarot: "XVI - 塔", scores: { order: 9, secrecy: 4, humanity: 1, intellect: 10 }, ethos: "解析萬物，洞悉規則，全知全能。", description: "世界是一本待解的巨著，而你是最專注的讀者。你追求對萬事萬物規則的極致理解，相信知識本身就是最高的權柄。通過解析與洞悉，你最終將成為行走的圖書館。", adjacent: ["觀眾", "太陽", "倒吊人"], image: "https://path-to-your-image/tower.jpg" },
+        { name: "不眠者", tarot: "XVII - 星星", scores: { order: 7, secrecy: 9, humanity: 4, intellect: 2 }, ethos: "擁抱黑夜，執掌隱秘，安撫瘋狂。", description: "當白日沉寂，你的世界才剛剛開始。你守護著黑夜的秘密，安撫著遊蕩的噩夢與瘋狂。你是永恆的守夜人，在靜謐的黑暗中維繫著脆弱的平衡。", adjacent: ["收屍人", "戰士"], image: "https://path-to-your-image/star.jpg" },
+        { name: "收屍人", tarot: "XIII - 死神", scores: { order: 8, secrecy: 6, humanity: -6, intellect: 3 }, ethos: "看守冥界，擺渡靈魂，迎接永眠。", description: "你行走在生與死的邊界，是亡魂的引路人與安撫者。你對死亡有著超然的理解，不畏懼腐朽與終結。你執掌著冥界的鑰匙，確保生命的循環得以延續。", adjacent: ["不眠者", "戰士"], image: "https://path-to-your-image/death.jpg" },
+        { name: "戰士", tarot: "VIII - 力量", scores: { order: 5, secrecy: -8, humanity: 2, intellect: -9 }, ethos: "磨練武藝，守護黎明，化身榮耀。", description: "你的身體就是你最值得信賴的武器。通過千錘百鍊的技藝與不屈的意志，你追求力量的極致。你既是勇猛的鬥士，也是堅定的守護者，用榮耀鑄就你的傳奇。", adjacent: ["不眠者", "收屍人"], image: "https://path-to-your-image/strength.jpg" },
+        { name: "水手", tarot: "V - 教皇", scores: { order: -4, secrecy: -9, humanity: -5, intellect: -8 }, ethos: "駕馭風暴，統御海洋，施展天災。", description: "風暴是你的號角，海洋是你的疆土。你崇尚最原始、最直接的力量，以絕對的威勢鎮壓一切。你從不隱藏你的憤怒，如同天災般降臨，令萬物敬畏。", adjacent: ["觀眾", "太陽", "倒吊人", "白塔"], image: "https://path-to-your-image/hierophant.jpg" },
+        { name: "獵人", tarot: "VII - 戰車", scores: { order: -9, secrecy: -6, humanity: -4, intellect: -7 }, ethos: "挑釁戰爭，收割生命，化身災禍。", description: "混亂是你的階梯，戰爭是你的藝術。你擅長挑釁與煽動，在衝突的烈焰中收割勝利。你享受追獵的快感，將世界視為你的獵場，不斷尋找更強大的對手。", adjacent: ["魔女"], image: "https://path-to-your-image/chariot.jpg" },
+        { name: "魔女", tarot: "III - 皇后", scores: { order: -7, secrecy: 2, humanity: -9, intellect: -2 }, ethos: "教唆慾望，傳播痛苦，帶來末日。", description: "你是痛苦與絕望的化身，是激化矛盾的催化劑。你深知慾望的甜美與致命，並以此為武器，將世界拖入歡愉的深淵。你的美麗與你的危險一樣，令人無法抗拒。", adjacent: ["獵人"], image: "https://path-to-your-image/empress.jpg" },
+        { name: "藥師", tarot: "XVIII - 月亮", scores: { order: -2, secrecy: 3, humanity: -1, intellect: 6 }, ethos: "調製魔藥，創造生命，擁抱血族。", description: "你探索生命的奧秘，通過調配與融合，創造出奇異的魔藥與生命。你行走在月光下的陰影中，對血液與黑暗有著天生的親和力，追求著另類的永生。", adjacent: ["耕種者"], image: "https://path-to-your-image/moon.jpg" },
+        { name: "耕種者", tarot: "XXI - 世界", scores: { order: 4, secrecy: -5, humanity: 7, intellect: -4 }, ethos: "播撒豐饒，孕育萬物，化身大地。", description: "你代表著生命、豐饒與守護。你滋養萬物，從播種到收穫，體驗著生命循環的喜悅。你擁有大地般的耐心與溫柔，是文明與族群最堅實的後盾。", adjacent: ["藥師"], image: "https://path-to-your-image/world.jpg" },
+        { name: "律師", tarot: "IV - 皇帝", scores: { order: 9, secrecy: 3, humanity: -8, intellect: 7 }, ethos: "發現漏洞，扭曲規則，死而復生。", description: "秩序並非神聖不可侵犯，而是充滿了可供利用的漏洞。你精通規則的每一個細節，只為將其扭曲，服務於你自身的意志。你建立的帝國，是對既有秩序的嘲弄與篡奪。", adjacent: ["仲裁人"], image: "https://path-to-your-image/emperor.jpg" },
+        { name: "仲裁人", tarot: "XX - 審判", scores: { order: 10, secrecy: -4, humanity: 4, intellect: -5 }, ethos: "制定秩序，執行律法，維護平衡。", description: "你是秩序的化身，是規則的守護者。你相信絕對的公正與權威是維繫世界穩定的基石。你用手中的劍與法典，裁決紛爭，懲戒混亂，不容許絲毫偏離。", adjacent: ["律師"], image: "https://path-to-your-image/judgement.jpg" },
+        { name: "囚犯", tarot: "XIV - 節制", scores: { order: -6, secrecy: 1, humanity: -10, intellect: -6 }, ethos: "擁抱詛咒，掙脫束縛，化身神孽。", description: "你生來就被詛咒所束縛，痛苦是你唯一的同伴。但你並未屈服，反而將這份痛苦化為力量，擁抱瘋狂，挑戰命運。你渴望掙脫一切枷鎖，哪怕代價是化身為邪物。", adjacent: ["罪犯"], image: "https://path-to-your-image/temperance.jpg" },
+        { name: "罪犯", tarot: "XV - 惡魔", scores: { order: -10, secrecy: -2, humanity: -9, intellect: -4 }, ethos: "沉淪慾望，散播墮落，化身深淵。", description: "你徹底擁抱了內心的黑暗，將慾望與墮落視為真理。你從不掩飾自己的邪惡，並樂於將他人一同拉入深淵。對你而言，道德只是弱者的藉口，混亂才是世界的本質。", adjacent: ["囚犯"], image: "https://path-to-your-image/devil.jpg" },
+        { name: "窺秘人", tarot: "IX - 隱者", scores: { order: 2, secrecy: 10, humanity: 0, intellect: 9 }, ethos: "窺探奧秘，解析魔法，隱於世外。", description: "世界對你而言是一個巨大的謎題，你畢生致力於窺探其背後的奧秘。你隱居幕後，沉浸在知識的海洋中，對世俗的權力與紛爭毫無興趣。真理是你唯一的追求。", adjacent: ["通識者"], image: "https://path-to-your-image/hermit.jpg" },
+        { name: "通識者", tarot: "II - 女祭司", scores: { order: 7, secrecy: -3, humanity: 3, intellect: 8 }, ethos: "相信知識，工於造物，啟蒙文明。", description: "你堅信知識就是力量，並致力於將其轉化為實際的造物。你是一位傑出的工匠與發明家，通過你的智慧與雙手，推動文明的進步，為世界帶來啟蒙之光。", adjacent: ["窺秘人"], image: "https://path-to-your-image/high_priestess.jpg" },
+        { name: "怪物", tarot: "X - 命運之輪", scores: { order: 0, secrecy: 0, humanity: 0, intellect: 0 }, ethos: "玩弄概率，重啟命運，身化巨蛇。", description: "你生來便能聽見命運的骰子滾動的聲音。幸運與災禍是你的雙生子，概率是你手中的黏土。你通過精密的計算和對宿命的直覺，最終將成為那銜尾的巨蛇，重啟萬物的輪迴。", adjacent:, image: "https://path-to-your-image/wheel_of_fortune.jpg" }
+    ];
 
-let currentQuestionIndex = 0;
-let pathwayScores = {};
+    // 問題資料庫 (擴充至30題)
+    const questions = [
+        {
+            text: "面對一個複雜混亂的系統，您更傾向於：",
+            answers: [
+                { text: "建立一套全新的、嚴格的規則來徹底取代它。", effects: { order: 3, intellect: 1 } },
+                { text: "從混亂中尋找規律，並利用這些規律為自己服務。", effects: { chaos: -2, intellect: 2, secrecy: 1 } },
+                { text: "徹底摧毀它，相信無序本身就是一種更自然的狀態。", effects: { chaos: -3, instinct: -1 } },
+                { text: "保持距離，僅僅觀察和記錄它的運作方式，不加干涉。", effects: { secrecy: 2, intellect: 2 } }
+            ]
+        },
+        {
+            text: "您認為「真相」的價值在於：",
+            answers: [
+                { text: "它是普世的光明，應當被所有人知曉。", effects: { revelation: -3, humanity: 2 } },
+                { text: "它是最強大的武器，應當被謹慎地隱藏和使用。", effects: { secrecy: 3, divinity: -1 } },
+                { text: "它本身沒有意義，其意義取決於如何詮釋和利用。", effects: { chaos: -2, intellect: 1, divinity: -1 } },
+                { text: "深入理解真相的過程，比真相本身更重要。", effects: { intellect: 3, secrecy: 1 } }
+            ]
+        },
+        {
+            text: "在一場重要的談判中，您會選擇的策略是：",
+            answers: [
+                { text: "以絕對的實力或權威進行壓制，迫使對方接受您的條件。", effects: { order: 2, instinct: -3 } },
+                { text: "透過精湛的言辭和邏輯，引導對方相信您的方案對他們最有利。", effects: { intellect: 3, revelation: -1 } },
+                { text: "找出規則中的漏洞，設計一個讓對方無法拒絕的合法陷阱。", effects: { order: 1, intellect: 2, chaos: -1 } },
+                { text: "運用魅力和共情，讓對方在情感上認同您，從而達成共識。", effects: { humanity: 3, revelation: -1 } }
+            ]
+        },
+        {
+            text: "當您的長期計劃遭遇了無法預料的徹底失敗，您的第一反應是：",
+            answers: [
+                { text: "加倍投入，用更強大的力量或資源強行推進原計劃。", effects: { instinct: -3, divinity: -1 } },
+                { text: "冷靜地分析失敗的每一個細節，尋找問題的根本原因並修正。", effects: { intellect: 3, order: 1 } },
+                { text: "毫不猶豫地放棄，並立刻構思一個全新的、完全不同的方案。", effects: { chaos: -3, intellect: 1 } },
+                { text: "尋找一種方法來改變導致失敗的外部規則或環境本身。", effects: { order: 2, divinity: -2, intellect: 1 } }
+            ]
+        },
+        {
+            text: "如果可以獲得一種能力，您會選擇：",
+            answers: [
+                { text: "預知未來，洞悉命運的走向。", effects: { intellect: 2, secrecy: 1 } },
+                { text: "操控他人的思想和行為。", effects: { divinity: -3, secrecy: 2 } },
+                { text: "穿梭於空間和歷史之中。", effects: { intellect: 2, chaos: -1 } },
+                { text: "擁有近乎不死的強大肉體。", effects: { instinct: -2, divinity: -1 } }
+            ]
+        },
+        {
+            text: "在團隊合作中，您最看重的是：",
+            answers: [
+                { text: "清晰的等級制度和絕對的服從。", effects: { order: 3 } },
+                { text: "每個成員都能發揮其獨特才能的協同效應。", effects: { chaos: -1, intellect: 2 } },
+                { text: "團隊能夠達成目標，過程和手段並不重要。", effects: { divinity: -2, order: 1 } },
+                { text: "成員之間深厚的情感聯繫和相互守護。", effects: { humanity: 3 } }
+            ]
+        },
+        {
+            text: "您更認同哪種生活哲學？",
+            answers: [
+                { text: "人生最大的成就是創造出獨一無二的作品。", effects: { intellect: 2, humanity: 1 } },
+                { text: "不斷學習和探索是人生的最高追求。", effects: { intellect: 3 } },
+                { text: "體驗不同的角色和生活遠比固守一隅有趣。", effects: { chaos: -2, secrecy: 1 } },
+                { text: "在競爭中不斷變強並最終勝出是生存的唯一法則。", effects: { instinct: -2, divinity: -1 } }
+            ]
+        },
+        {
+            text: "面對一個道德上有爭議但能帶來巨大利益的機會，您會：",
+            answers: [
+                { text: "堅決拒絕，因為原則不容挑戰。", effects: { order: 2, humanity: 2 } },
+                { text: "尋找一種方式，既能獲得利益，又能將其行為在道德或法律上合理化。", effects: { order: 1, intellect: 2, divinity: -1 } },
+                { text: "毫不猶豫地抓住機會，利益最大化是首要考量。", effects: { divinity: -3, chaos: -1 } },
+                { text: "感到內心掙扎，並試圖尋找一個兩全其美的第三選項。", effects: { humanity: 2, chaos: -1 } }
+            ]
+        },
+        {
+            text: "您認為一個理想的社會應該基於：",
+            answers: [
+                { text: "完美的法律與秩序。", effects: { order: 3 } },
+                { text: "個體的自由與創造力。", effects: { chaos: -3 } },
+                { text: "傳統、信仰與榮耀。", effects: { order: 2, instinct: -1 } },
+                { text: "適者生存的自然法則。", effects: { chaos: -2, instinct: -2 } }
+            ]
+        },
+        {
+            text: "當您感到被誤解時，您通常會：",
+            answers: [
+                { text: "努力解釋，直到對方完全理解您的真實意圖。", effects: { revelation: -2, humanity: 1 } },
+                { text: "毫不在意，他人的看法無關緊要。", effects: { divinity: -2, secrecy: 1 } },
+                { text: "反過來利用這種誤解，將其變為對自己有利的局面。", effects: { secrecy: 2, intellect: 1, chaos: -1 } },
+                { text: "感到憤怒，並用行動證明對方是錯誤的。", effects: { instinct: -3, revelation: -1 } }
+            ]
+        },
+        {
+            text: "您更喜歡的工作環境是：",
+            answers: [
+                { text: "獨自一人的書房或實驗室。", effects: { secrecy: 2, intellect: 2 } },
+                { text: "充滿激情與挑戰的戰場或競技場。", effects: { instinct: -3, revelation: -1 } },
+                { text: "權力鬥爭的中心，如宮廷或董事會。", effects: { order: 2, divinity: -2 } },
+                { text: "隱藏在幕後，觀察和影響著一切的秘密組織。", effects: { secrecy: 3, intellect: 1 } }
+            ]
+        },
+        {
+            text: "對於「運氣」，您的看法是：",
+            answers: [
+                { text: "它是可以被計算和操縱的變數。", effects: { intellect: 3 } },
+                { text: "它是宇宙無常的體現，只能順應。", effects: { chaos: -1, humanity: 1 } },
+                { text: "它是弱者的藉口，真正的強者創造自己的運氣。", effects: { instinct: -2, divinity: -1 } },
+                { text: "它是值得研究的神秘力量。", effects: { secrecy: 1, intellect: 2 } }
+            ]
+        },
+        {
+            text: "如果必須捨棄一樣東西，您會選擇：",
+            answers: [
+                { text: "您的情感。", effects: { divinity: -3 } },
+                { text: "您的記憶。", effects: { chaos: -2, instinct: -1 } },
+                { text: "您的原則。", effects: { chaos: -2, divinity: -1 } },
+                { text: "您的人性。", effects: { divinity: -4 } }
+            ]
+        },
+        {
+            text: "在處理危機時，您更依賴：",
+            answers: [
+                { text: "精心準備的預案和流程。", effects: { order: 2, intellect: 2 } },
+                { text: "臨場的直覺和即興發揮。", effects: { instinct: -2, chaos: -1 } },
+                { text: "壓倒性的力量。", effects: { instinct: -3 } },
+                { text: "難以捉摸的欺騙和誤導。", effects: { secrecy: 2, chaos: -2 } }
+            ]
+        },
+        {
+            text: "您認為「美」的本質是：",
+            answers: [
+                { text: "和諧、秩序與對稱。", effects: { order: 2, humanity: 1 } },
+                { text: "生命力、繁衍與生長。", effects: { humanity: 2, instinct: -1 } },
+                { text: "痛苦、絕望與矛盾中的張力。", effects: { divinity: -2, chaos: -1 } },
+                { text: "知識、智慧與奧秘的光輝。", effects: { intellect: 3, secrecy: 1 } }
+            ]
+        },
+        {
+            text: "一個古老的、被封印的存在向您許諾無窮的力量，代價是釋放它，您會：",
+            answers: [
+                { text: "欺騙它，在獲得力量後重新封印或摧毀它。", effects: { secrecy: 2, intellect: 2, divinity: -1 } },
+                { text: "拒絕它，並加固封印，因為有些風險絕不能冒。", effects: { order: 3, humanity: 1 } },
+                { text: "接受交易，力量本身沒有善惡，關鍵在於使用者。", effects: { divinity: -3, chaos: -2 } },
+                { text: "試圖與它溝通，了解其本質和歷史，再做決定。", effects: { intellect: 3, secrecy: 1 } }
+            ]
+        },
+        {
+            text: "您對「傳統」的態度是：",
+            answers: [
+                { text: "它是智慧的結晶，應當被尊重和守護。", effects: { order: 3, humanity: 1 } },
+                { text: "它是束縛思想的枷鎖，應當被打破。", effects: { chaos: -3, revelation: -1 } },
+                { text: "它是可以被利用的工具，用以凝聚人心或達成目的。", effects: { order: 1, divinity: -2, intellect: 1 } },
+                { text: "它是歷史的一部分，值得研究但不一定需要遵循。", effects: { intellect: 2, chaos: -1 } }
+            ]
+        },
+        {
+            text: "您更傾向於通過何種方式獲得安全感？",
+            answers: [
+                { text: "擁有絕對的控制權。", effects: { order: 2, divinity: -2 } },
+                { text: "擁有無人能及的知識。", effects: { intellect: 3, secrecy: 1 } },
+                { text: "擁有不被任何人發現的秘密。", effects: { secrecy: 3 } },
+                { text: "擁有堅不可摧的盟友。", effects: { humanity: 3, revelation: -1 } }
+            ]
+        },
+        {
+            text: "當您看到不公義的事情發生時，您的第一衝動是：",
+            answers: [
+                { text: "運用規則和程序來尋求公正。", effects: { order: 3, intellect: 1 } },
+                { text: "用自己的力量直接介入，懲罰作惡者。", effects: { instinct: -3, revelation: -1 } },
+                { text: "煽動群眾的情緒，引發更大的衝突來暴露問題。", effects: { chaos: -3, revelation: -1 } },
+                { text: "思考如何從這件事中為自己謀取利益。", effects: { divinity: -2, intellect: 1, secrecy: 1 } }
+            ]
+        },
+        {
+            text: "您認為最深刻的痛苦來源於：",
+            answers: [
+                { text: "失去摯愛。", effects: { humanity: 3 } },
+                { text: "理想的破滅。", effects: { humanity: 2, intellect: 1 } },
+                { text: "無盡的孤獨。", effects: { divinity: -2, secrecy: 1 } },
+                { text: "被人背叛。", effects: { humanity: 2, order: 1 } }
+            ]
+        },
+        {
+            text: "在探索一個未知的古代遺蹟時，您的首要目標是：",
+            answers: [
+                { text: "尋找其中隱藏的寶藏或強大物品。", effects: { instinct: -2, divinity: -1 } },
+                { text: "解讀壁畫和文獻，還原此地的歷史真相。", effects: { intellect: 3, secrecy: 1 } },
+                { text: "活著出去，並將情報賣個好價錢。", effects: { chaos: -2, divinity: -1 } },
+                { text: "測試自己的極限，享受冒險的刺激。", effects: { instinct: -2, chaos: -1 } }
+            ]
+        },
+        {
+            text: "您如何看待「瘋狂」？",
+            answers: [
+                { text: "它是理智的喪失，一種需要被治癒或清除的疾病。", effects: { order: 2, humanity: 1 } },
+                { text: "它是另一種形式的理智，蘊含著被常人忽視的洞見。", effects: { intellect: 2, chaos: -1 } },
+                { text: "它是可以被利用的力量，是打破常規的催化劑。", effects: { chaos: -2, divinity: -2 } },
+                { text: "它是所有智慧生命最終無法避免的歸宿。", effects: { divinity: -3, secrecy: 1 } }
+            ]
+        },
+        {
+            text: "您更願意成為：",
+            answers: [
+                { text: "受人敬仰的聖人。", effects: { humanity: 3, revelation: -2 } },
+                { text: "令人畏懼的暴君。", effects: { divinity: -2, order: 2, instinct: -1 } },
+                { text: "無人知曉的操縱者。", effects: { secrecy: 3, divinity: -1 } },
+                { text: "孤獨的真理探尋者。", effects: { intellect: 2, secrecy: 2, divinity: -1 } }
+            ]
+        },
+        {
+            text: "當面對一個比您強大太多的敵人時，您會：",
+            answers: [
+                { text: "尋找其弱點，策劃一場完美的陰謀。", effects: { intellect: 3, secrecy: 2 } },
+                { text: "暫時撤退，積蓄力量，等待復仇的時機。", effects: { order: 1, instinct: -2 } },
+                { text: "挑釁並激怒它，使其在憤怒中犯錯。", effects: { chaos: -3, instinct: -1 } },
+                { text: "嘗試與其談判，或加入它。", effects: { divinity: -2, chaos: -1 } }
+            ]
+        },
+        {
+            text: "您認為最理想的復仇是：",
+            answers: [
+                { text: "讓對方在眾目睽睽之下身敗名裂。", effects: { revelation: -3, order: 1 } },
+                { text: "讓對方在不知不覺中失去一切，至死都不明白為何。", effects: { secrecy: 3, divinity: -1 } },
+                { text: "一場酣暢淋漓、充滿破壞與毀滅的正面對決。", effects: { instinct: -3, chaos: -1 } },
+                { text: "看到對方被自己建立的規則所反噬。", effects: { order: 2, intellect: 2, divinity: -1 } }
+            ]
+        },
+        {
+            text: "關於「變化」，您的看法是：",
+            answers: [
+                { text: "它是危險的，會破壞穩定和秩序。", effects: { order: 3 } },
+                { text: "它是機會，是通往進步的唯一途徑。", effects: { chaos: -3 } },
+                { text: "它是宇宙的常態，無所謂好壞。", effects: { intellect: 1, humanity: 1 } },
+                { text: "它是可以被引導和設計的。", effects: { intellect: 2, order: 1 } }
+            ]
+        },
+        {
+            text: "您對自然的態度更接近於：",
+            answers: [
+                { text: "它是需要被保護和尊重的生命之母。", effects: { humanity: 3, order: 1 } },
+                { text: "它是殘酷的鬥獸場，充滿了生存競爭。", effects: { instinct: -2, chaos: -1 } },
+                { text: "它是可以被改造和利用的資源庫。", effects: { intellect: 2, divinity: -1 } },
+                { text: "它是充滿了神秘力量和靈性的啟示源泉。", effects: { secrecy: 2, humanity: 1 } }
+            ]
+        },
+        {
+            text: "如果您發現世界的根基是一個巨大的謊言，您會：",
+            answers: [
+                { text: "試圖揭露它，即使會引發全球性的恐慌。", effects: { revelation: -3, chaos: -2 } },
+                { text: "守住這個秘密，並利用它來保護自己和身邊的人。", effects: { secrecy: 3, humanity: 1 } },
+                { text: "接受這個設定，並思考如何在這個謊言之上建立自己的真實。", effects: { intellect: 2, divinity: -2 } },
+                { text: "對此感到興奮，因為這意味著有更多未知的奧秘等待探索。", effects: { intellect: 2, chaos: -1 } }
+            ]
+        },
+        {
+            text: "在一段關係中（友情、愛情等），您最無法忍受的是：",
+            answers: [
+                { text: "對方試圖控制您。", effects: { chaos: -3 } },
+                { text: "對方的愚蠢和無知。", effects: { intellect: 2, divinity: -1 } },
+                { text: "對方的背叛和欺騙。", effects: { order: 2, humanity: 1 } },
+                { text: "對方的軟弱和逃避。", effects: { instinct: -2, divinity: -1 } }
+            ]
+        },
+        {
+            text: "站在人生的終點回望，您希望自己留下了什麼？",
+            answers: [
+                { text: "一個不朽的帝國或傳奇。", effects: { order: 2, divinity: -2, revelation: -1 } },
+                { text: "一套影響後世的思想或知識體系。", effects: { intellect: 3, revelation: -1 } },
+                { text: "一段充滿了愛、歡笑與淚水，無怨無悔的記憶。", effects: { humanity: 3 } },
+                { text: "一個沒有人能解開的謎。", effects: { secrecy: 3, intellect: 1 } }
+            ]
+        }
+    ];
 
-// 測驗問題數據庫 (完整15題版)
-const questions = [
-    {
-        question: "在深夜的貝克蘭德街頭，你目睹了一場非凡者之間的短暫衝突。一方逃離後，在原地留下了一本神秘的筆記。你會？",
-        answers: [
-            { text: "立即拾起筆記並迅速離開，找個安全的地方研究其中的秘密。", scores: { '隱者': 3, '門': 2, '通識者': 1 } },
-            { text: "保持距離，暗中觀察，等待官方非凡者前來處理，並記錄下他們的行為模式。", scores: { '觀眾': 3, '審訊官': 1, '倒吊人': 1 } },
-            { text: "認為這是個陷阱，或是與己無關的麻煩，選擇直接忽略並繞道而行。", scores: { '巨人': 2, '大地母神': 1, '愚者': -1 } },
-            { text: "走上前去，用腳尖輕輕翻開筆記，只想滿足瞬間的好奇心，看看裡面寫了什麼。", scores: { '錯誤': 2, '魔女': 1, '獵人': 1 } }
-        ]
-    },
-    {
-        question: "你所在的團隊接到一項任務，需要從一個戒備森嚴的貴族莊園中獲取一份機密文件。你的首選策略是？",
-        answers: [
-            { text: "策劃一場完美的潛入，利用莊園的防禦漏洞，像幽靈一樣進出，不留下一絲痕跡。", scores: { '門': 3, '錯誤': 2, '永暗之河': 2 } },
-            { text: "創造混亂。在城市另一端引發一場不大不小的騷動，調開大部分守衛力量，然後趁虛而入。", scores: { '紅祭司': 3, '愚者': 2, '深淵': 1 } },
-            { text: "利用社交手腕和偽裝，製造一個合理的身份混入莊園的晚宴，在眾目睽睽之下巧妙地竊取文件。", scores: { '愚者': 3, '觀眾': 2, '魔女': 1 } },
-            { text: "進行詳盡的外部勘察與情報收集，制定多套應變計畫，確保無論發生何種意外，團隊都能全身而退。", scores: { '白塔': 3, '觀眾': 2, '審訊官': 1 } }
-        ]
-    },
-    {
-        question: "你發現了一種可以穩定帶來財富，但會讓使用者逐漸喪失情感的非凡儀式。你會？",
-        answers: [
-            { text: "堅決抵制並想辦法銷毀所有相關知識，認為這種力量違反了人性的基本法則。", scores: { '太陽': 3, '審訊官': 2, '巨人': 1 } },
-            { text: "自己謹慎地使用，嚴格控制劑量和頻率，將其視為達成更高目標的必要工具。", scores: { '囚犯': 3, '倒吊人': 2, '隱者': 1 } },
-            { text: "將這個儀式「改良」後，匿名傳播出去，觀察它對社會造成的影響，以此作為一項有趣的實驗。", scores: { '愚者': 2, '魔女': 2, '深淵': 2 } },
-            { text: "利用這個秘密，去控制那些已經使用過儀式並身居高位的人，讓他們為你服務。", scores: { '錯誤': 3, '觀眾': 2, '暴君': 1 } }
-        ]
-    },
-    {
-        question: "面對一個看似無解的古老謎團，你的研究方法更傾向於？",
-        answers: [
-            { text: "泡在圖書館和檔案館裡，從浩如煙海的歷史文獻和被人遺忘的記錄中尋找蛛絲馬跡。", scores: { '隱者': 3, '白塔': 2, '死神': 1 } },
-            { text: "透過占卜、靈視等神秘學手段，直接向未知的存在或命運本身尋求啟示。", scores: { '愚者': 2, '命運之輪': 2, '月亮': 1 } },
-            { text: "建立一個邏輯模型，將所有已知碎片放入其中，透過嚴密的推理和假設來填補空白。", scores: { '觀眾': 3, '通識者': 2, '審訊官': 1 } },
-            { text: "親自前往與謎團相關的古老遺蹟探險，相信直覺和現場的感受會引導你找到答案。", scores: { '門': 2, '獵人': 2, '紅祭司': 1 } }
-        ]
-    },
-    {
-        question: "當你獲得強大的力量後，你認為最理想的狀態是？",
-        answers: [
-            { text: "成為秩序的化身，制定並執行絕對公正的規則，讓世界在你的掌控下穩定運行。", scores: { '審訊官': 3, '暴君': 2, '白塔': 2 } },
-            { text: "隱於幕後，像操縱木偶一樣影響世界的走向，享受那種不為人知的全能感。", scores: { '愚者': 3, '觀眾': 3, '永暗之河': 1 } },
-            { text: "隨心所欲，不受任何束縛，體驗生命中的一切可能性，無論是好是壞。", scores: { '魔女': 3, '錯誤': 2, '深淵': 2 } },
-            { text: "保護自己關心的人和社區，建立一個能讓他們安居樂業的庇護所。", scores: { '大地母神': 3, '巨人': 2, '太陽': 1 } }
-        ]
-    },
-    {
-        question: "在一次公開演講或辯論中，你最有可能扮演的角色是？",
-        answers: [
-            { text: "冷靜的分析者，用數據和邏輯指出對方言論中的每一個漏洞。", scores: { '白塔': 3, '通識者': 2, '審訊官': 1 } },
-            { text: "富有魅力的煽動者，用激情和極具感染力的語言引導聽眾的情緒。", scores: { '紅祭司': 3, '太陽': 2, '暴君': 1 } },
-            { text: "沉默的觀察者，在人群中洞悉每個人的真實想法和派系關係。", scores: { '觀眾': 4, '倒吊人': 1 } },
-            { text: "意外的攪局者，在關鍵時刻提出一個離題但卻能顛覆整個討論前提的問題。", scores: { '愚者': 3, '錯誤': 2, '命運之輪': 1 } }
-        ]
-    },
-    {
-        question: "如果可以，你希望獲得以下哪種知識？",
-        answers: [
-            { text: "理解宇宙終極真理的物理學和數學定律。", scores: { '隱者': 3, '白塔': 2, '通識者': 2 } },
-            { text: "看穿任何人謊言、洞悉其內心深處動機的心理學知識。", scores: { '觀眾': 4, '審訊官': 1 } },
-            { text: "所有失落文明的歷史和其魔法系統的完整記錄。", scores: { '愚者': 2, '死神': 2, '隱者': 1 } },
-            { text: "預知未來股市波動和所有賭局結果的概率學方法。", scores: { '命運之輪': 3, '錯誤': 2 } }
-        ]
-    },
-    {
-        question: "你偶然獲得了一件強大的封印物，但它會持續對周圍環境造成輕微的負面影響。你會？",
-        answers: [
-            { text: "將其上交給教會或官方組織，相信他們有更專業的方法來處理。", scores: { '審訊官': 2, '太陽': 2, '巨人': 1 } },
-            { text: "嘗試自己研究和控制它，希望能將其轉化為自己的力量。", scores: { '隱者': 2, '通識者': 2, '囚犯': 2 } },
-            { text: "將其藏在一個無人知曉的地方，確保它既不會傷害別人，也不會被他人奪走。", scores: { '永暗之河': 3, '倒吊人': 2, '死神': 1 } },
-            { text: "把它當作一個燙手山芋，用巧妙的手段讓它「意外」地轉移到你的敵人手中。", scores: { '錯誤': 3, '愚者': 2, '魔女': 1 } }
-        ]
-    },
-    {
-        question: "你對「美」的定義更接近於？",
-        answers: [
-            { text: "宏偉的建築、精密的機械和對稱的幾何圖形所展現的秩序之美。", scores: { '審訊官': 2, '白塔': 2, '通識者': 2 } },
-            { text: "稍縱即逝的巧合、命運的奇妙邂逅和不可預測的變化之美。", scores: { '命運之輪': 3, '愚者': 2 } },
-            { text: "隱藏在悲劇、痛苦和毀滅中所展現出的那種深刻而強烈的情感之美。", scores: { '魔女': 3, '深淵': 2, '倒吊人': 1 } },
-            { text: "大自然中生命的循環、萬物的生長與繁衍所體現的原始之美。", scores: { '大地母神': 3, '月亮': 2, '死神': 1 } }
-        ]
-    },
-    {
-        question: "一位你信任的朋友向你坦白，他為了復仇，準備策劃一場會傷及無辜的襲擊。你會？",
-        answers: [
-            { text: "試圖用言語和邏輯說服他放棄，向他分析此舉的利弊和道德後果。", scores: { '觀眾': 3, '太陽': 2, '大地母神': 1 } },
-            { text: "暗中破壞他的計畫，同時不讓他發現是你在干預，以保護無辜者和你朋友的安全。", scores: { '愚者': 3, '永暗之河': 2, '倒吊人': 1 } },
-            { text: "尊重他的選擇，但會在他行動時，盡自己所能將無辜者的傷亡降到最低。", scores: { '獵人': 2, '紅祭司': 1, '命運之輪': 1 } },
-            { text: "直接將他制服並移交給官方，認為這是阻止更大悲劇發生的最有效方法。", scores: { '審訊官': 3, '暴君': 2, '巨人': 2 } }
-        ]
-    },
-    {
-        question: "你必須在一場無法避免的戰爭中選邊站。你會選擇加入哪一方？",
-        answers: [
-            { text: "擁有正統名義和嚴明軍紀，旨在恢復舊有秩序的王國軍。", scores: { '審訊官': 2, '巨人': 2, '暴君': 1 } },
-            { text: "由魅力非凡的領袖帶領，承諾為所有人帶來自由與變革的革命軍。", scores: { '紅祭司': 3, '太陽': 2, '愚者': 1 } },
-            { text: "科技最先進、戰術最靈活，但目標僅僅是自身利益的傭兵團。", scores: { '通識者': 3, '獵人': 2, '錯誤': 1 } },
-            { text: "哪一方都不加入，而是利用戰爭的混亂，在暗中實現自己的圖謀。", scores: { '倒吊人': 3, '深淵': 2, '永暗之河': 1 } }
-        ]
-    },
-    {
-        question: "你認為「瘋狂」是什麼？",
-        answers: [
-            { text: "一種必須被收容和治癒的疾病，是秩序的對立面。", scores: { '審訊官': 2, '太陽': 2, '大地母神': 1 } },
-            { text: "看見世界表象之下，常人無法理解的更深層真實。", scores: { '觀眾': 2, '隱者': 2, '月亮': 2 } },
-            { text: "一種強大的武器，可以摧毀敵人，也可以吞噬自己。", scores: { '魔女': 2, '紅祭司': 2, '深淵': 1 } },
-            { text: "宇宙的本質狀態，清醒和理智才是短暫的幻覺。", scores: { '愚者': 2, '倒吊人': 2, '囚犯': 1 } }
-        ]
-    },
-    {
-        question: "你更願意如何度過一個安靜的下午？",
-        answers: [
-            { text: "在花園裡修剪植物，或是在鄉間散步，感受自然的生命力。", scores: { '大地母神': 3, '月亮': 2, '太陽': 1 } },
-            { text: "進行體能訓練，打磨自己的戰鬥技巧，保持巔峰狀態。", scores: { '獵人': 3, '巨人': 2, '紅祭司': 1 } },
-            { text: "躲在密室中，進行一項無人知曉的神秘學實驗。", scores: { '隱者': 3, '死神': 2, '囚犯': 1 } },
-            { text: "參加一場優雅的下午茶會，編織一張複雜的社交關係網。", scores: { '觀眾': 2, '魔女': 1, '暴君': 1 } }
-        ]
-    },
-    {
-        question: "一個古老的預言宣稱你將帶來毀滅。你的反應是？",
-        answers: [
-            { text: "接受它，並將其視為自己無可推卸的宿命，甚至主動去實現它。", scores: { '深淵': 3, '死神': 2, '命運之輪': 1 } },
-            { text: "盡一切可能去對抗這個預言，證明命運可以被改變。", scores: { '太陽': 3, '巨人': 2, '獵人': 1 } },
-            { text: "深入研究預言的來源和每一個細節，試圖從中找到漏洞或歧義。", scores: { '白塔': 3, '隱者': 2, '錯誤': 1 } },
-            { text: "徹底無視它，相信自己的行動只由當下的意志決定，而非虛無縹緲的未來。", scores: { '暴君': 3, '紅祭司': 2, '門': 1 } }
-        ]
-    },
-    {
-        question: "你認為最可貴的品質是什麼？",
-        answers: [
-            { text: "為了信念和所愛之人，承受任何痛苦的堅韌。", scores: { '倒吊人': 3, '囚犯': 2, '巨人': 1 } },
-            { text: "永不滿足的好奇心和對未知永不停歇的探索。", scores: { '門': 3, '隱者': 2, '通識者': 1 } },
-            { text: "在任何情況下都能保持絕對理智和冷靜的頭腦。", scores: { '觀眾': 3, '白塔': 2, '死神': 1 } },
-            { text: "能夠洞悉並利用規則，同時又不受其束縛的靈活性。", scores: { '錯誤': 3, '愚者': 2, '獵人': 1 } }
-        ]
+    // --- DOM 元素 ---
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const questionTitle = document.getElementById('question-title');
+    const answerGrid = document.getElementById('answer-grid');
+    const progressBar = document.getElementById('progress-bar');
+    const pathwayCard = document.getElementById('pathway-card');
+    const adjacentPathsGrid = document.getElementById('adjacent-paths-grid');
+
+    // --- 狀態變數 ---
+    let currentQuestionIndex = 0;
+    let userScores = { order: 0, chaos: 0, secrecy: 0, revelation: 0, humanity: 0, divinity: 0, intellect: 0, instinct: 0 };
+
+    // --- 核心函數 ---
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        userScores = { order: 0, chaos: 0, secrecy: 0, revelation: 0, humanity: 0, divinity: 0, intellect: 0, instinct: 0 };
+        introScreen.classList.remove('active');
+        resultScreen.classList.remove('active');
+        quizScreen.classList.add('active');
+        displayQuestion();
     }
-];
 
-// 途徑結果數據庫 (完整22種途徑檔案)
-const pathwayData = {
-    '愚者': { name: "愚者 (The Fool)", philosophy: "世界是一個巨大的舞台，歷史是可以被任意編排的劇本，而變化與欺騙是撬動現實的槓桿。愚者途徑的精髓在於「扮演」，他們是天生的演員、導演和騙子，相信一切皆可被「嫁接」，一切現實皆可被「愚弄」。他們在幕後操縱著命運的絲線，享受著將不可能變為可能的智力快感。", profile: "你是一個極富想像力和創造力的人，善於從混亂中看到機會。你可能不喜歡循規蹈矩，更偏愛用非傳統的、甚至是狡詐的手段來解決問題。你享受掌控資訊的感覺，並能巧妙地引導他人，讓他們在不知不覺中按照你的意願行事。你對歷史、神秘學和象徵符號有著濃厚的興趣，並相信表象之下必有更深層的真實。" },
-    '門': { name: "門 (Door)", philosophy: "空間是自由的疆域，知識是探索的鑰匙。門途徑的核心是對空間的理解和應用。他們是天生的旅行者、探險家和魔術師。他們能夠穿梭於常人無法企及的領域，打開任何封鎖的門扉。對他們而言，物理的障礙和距離的限制都是可以被超越的幻象。", profile: "你是一個充滿好奇心、熱愛自由且不喜歡被束縛的人。你對未知的事物和神秘的現象有著強烈的探索慾。你可能不喜歡長時間待在同一個地方，享受旅行和冒險帶來的樂趣。你足智多謀，總能找到意想不到的方法來解決困難，尤其擅長「逃脫」困境。" },
-    '錯誤': { name: "錯誤 (Error)", philosophy: "任何系統都存在漏洞，任何概念都可被竊取。錯誤途徑的非凡者是宇宙的駭客，他們尋找並利用規則的「Bug」，扭曲時間、空間和命運。他們相信，真正的力量不是創造，而是通過寄生和竊取來篡改現實，讓世界按照他們的意志出現「錯誤」。", profile: "你思維敏捷，極具反叛精神，善於發現他人忽略的捷徑和漏洞。你看待世界的方式與眾不同，總能從常規中發現不合邏輯之處。你可能有些玩世不恭，享受智力上的優越感，並認為規則本身就是一種限制，而你的天賦就是超越這些限制。" },
-    '觀眾': { name: "觀眾 (Visionary)", philosophy: "旁觀者清。真正的力量來自於深刻的理解，而非粗暴的干涉。觀眾途徑的非凡者是天生的心理學家、觀察者和分析師。他們能在紛繁複雜的人際關係和社會現象中，精準地洞察到最核心的驅動力和最隱秘的動機。他們追求的是精神層面的全知，透過觀察和引導來達成目的。", profile: "你是一個內斂、冷靜且極具洞察力的人。你習慣於在人群中保持沉默，默默觀察周遭的一切。你對他人的情緒和心理狀態非常敏感，能夠輕易看穿謊言和偽裝。你做決定前總會進行周密的分析，不喜歡衝動行事。你可能不善於成為焦點，但你享受那種作為「幕後智者」的感覺。" },
-    '太陽': { name: "太陽 (Sun)", philosophy: "光明驅散一切黑暗，信念帶來無窮力量。太陽途徑的非凡者是光與熱的化身，是天生的領袖和鼓舞者。他們堅信正義、勇氣和榮耀，並用自身的光芒去淨化邪惡、溫暖同伴。他們的力量源於純粹的信念和對光明的歌頌，是黑暗與墮落天生的敵人。", profile: "你是一個開朗、正直、充滿正能量的人。你樂於助人，有著強烈的集體榮譽感，並願意為了團隊的利益而戰。你厭惡陰謀和詭計，更喜歡光明正大的競爭。你的存在本身就能給周圍的人帶來希望和勇氣，是團隊中不可或缺的核心。" },
-    '暴君': { name: "暴君 (Tyrant)", philosophy: "力量即真理。在狂暴的風暴和雷霆面前，一切計謀和規則都顯得蒼白無力。暴君途徑的非凡者崇尚最純粹、最直接的力量。他們是海洋的霸主，風暴的化身，用無可匹敵的威勢來征服一切。他們堅信，絕對的力量能帶來絕對的權威。", profile: "你是一個果斷、強勢且充滿自信的人。你喜歡用直接的方式解決問題，不屑於使用陰謀詭計。你有著強烈的領導慾和控制慾，希望他人能夠服從你的意志。在壓力之下，你不但不會退縮，反而會變得更加堅韌和富有攻擊性。你享受站在權力頂峰、俯瞰眾生的感覺。" },
-    '白塔': { name: "白塔 (White Tower)", philosophy: "知識即壁壘，全知即全能。白塔途徑的非凡者是知識的守護者和規則的詮釋者。他們相信，通過掌握一切知識，可以構建出無懈可擊的防禦，並限制一切變化。他們的力量在於「定義」和「限制」，將世界萬物納入自己構建的知識體系中，從而實現掌控。", profile: "你是一個博學、嚴謹且注重邏輯的人。你對知識有著強烈的渴求，並喜歡將事物分門別類，建立清晰的體系。你做事有條不紊，善於制定長遠的計畫。你可能不喜歡意外和變化，認為一切都應該在可預測的軌道上運行。" },
-    '倒吊人': { name: "倒吊人 (Hanged Man)", philosophy: "忍耐孕育力量，犧牲通往救贖。倒吊人途徑的非凡者是陰影中的苦修者，他們相信通過承受痛苦和自我犧牲，可以換來更深層次的力量和對墮落的理解。他們的力量源於對陰影和靈界生物的控制，以及通過獻祭換取神恩。", profile: "你是一個堅忍、內省且富有犧牲精神的人。你能夠為了長遠的目標而忍受當下的痛苦和孤獨。你對事物的看法可能比較悲觀，但這也讓你比別人更能理解人性的陰暗面。你相信，真正的強大並非來自外在，而是源於內心的堅韌和對信念的執著。" },
-    '永暗之河': { name: "永暗之河 (Darkness)", philosophy: "黑暗是萬物的歸宿，隱秘是最終的守護。永暗之河途徑的非凡者是黑夜的寵兒，是秘密的化身。他們崇尚寂靜、隱匿和終結，相信在永恆的黑暗中，一切紛爭都將平息。他們的力量在於操控黑暗、隱藏身形和帶來永恆的沉眠。", profile: "你是一個神秘、沉靜且喜歡獨處的人。你不喜歡成為眾人矚目的焦點，更享受在暗中觀察和行動。你守口如瓶，是他人眼中最值得信賴的秘密保管者。你可能給人一種疏離感，但你的內心深處尋求著安寧與平靜。" },
-    '死神': { name: "死神 (Death)", philosophy: "死亡是唯一的公平，終結是新生的序曲。死神途徑的非凡者是靈魂的引渡者，是生命循環的掌管者。他們並不邪惡，而是維持宇宙平衡的必要存在。他們的力量在於操控靈魂、帶來安息和理解死亡的本質，從而超越生死。", profile: "你是一個冷靜、客觀且對生命有著深刻思考的人。你看待事物超越了表面的喜悲，能從終結中看到新的開始。你做事公正無私，不受情感左右。你對靈魂、來世等終極問題充滿好奇，並試圖從中找到生命的意義。" },
-    '巨人': { name: "巨人 (Twilight Giant)", philosophy: "守護是我的天職，榮耀存於黃昏之戰。巨人途徑的非凡者是天生的戰士和守護者。他們擁有無與倫比的勇氣和堅不可摧的防禦，是戰場上最可靠的屏障。他們的力量在於光明、秩序和純粹的物理力量，是混亂和黑暗的堅定對抗者。", profile: "你是一個忠誠、可靠且富有責任感的人。你天生具有保護他人的慾望，並願意為此付出一切。你重視榮譽和承諾，言出必行。你可能不善言辭，但你的行動總能給人帶來無比的安全感。" },
-    '魔女': { name: "魔女 (Demoness)", philosophy: "痛苦、恐懼和絕望是世界上最深刻、最真實的情感，也是最強大的力量源泉。魔女途徑的非凡者是災難和痛苦的散播者。她們擅長利用人性的弱點，製造恐慌和瘟疫，從中汲取力量。對她們而言，美麗與致命往往是一體兩面，誘惑是通往毀滅的捷徑。", profile: "你可能是一個情感強烈、敢愛敢恨的人，對事物的感受比常人更為深刻。你懂得如何利用自身的魅力來達成目的，並且不畏懼使用一些會引起他人不適的手段。你可能對傳統的道德觀念持懷疑態度，認為在極端的環境下，生存和勝利才是最重要的。" },
-    '紅祭司': { name: "紅祭司 (Red Priest)", philosophy: "戰爭是推動進步的熔爐，征服是實現理想的手段。紅祭司途徑的非凡者是天生的戰爭狂人和陰謀家。他們享受競爭和挑戰，善於挑起爭端並從中獲利。他們的力量在於火焰、鐵血和煽動人心的能力，相信只有通過不斷的鬥爭才能實現最終的和平。", profile: "你是一個充滿野心、好勝心極強的人。你熱愛競爭，享受勝利帶來的快感。你善於制定策略，並能為了達成目標而動員他人。你可能具有很強的領袖魅力，但也可能顯得富有攻擊性和侵略性。" },
-    '隱者': { name: "隱者 (Hermit)", philosophy: "知識本身就是力量，宇宙的奧秘隱藏在符號、星辰和魔法的深處。隱者途徑的非凡者是純粹的學者和神秘學家。他們畢生追求對世界本質的理解，沉浸在知識的海洋中。他們的力量來自於對魔法和自然法則的深刻洞悉，能夠編織出複雜而強大的法術。", profile: "你是一個求知慾極強、熱愛思考和研究的人。你享受獨處，認為社交活動會浪費你寶貴的時間。你對哲學、科學或神秘學等高深領域有著濃厚的興趣。你可能不善言辭，但你的內心世界極為豐富。你相信，只要掌握了足夠的知識，就能解決任何問題。" },
-    '通識者': { name: "通識者 (Paragon)", philosophy: "萬物皆可解構，萬物皆可融合。通識者途徑的非凡者是鍊金術士和發明家，他們追求將魔法與科技完美結合。他們的力量在於分析、解構和重組物質，創造出強大的鍊金物品和機械造物。他們相信，通過不斷的改良和創新，可以突破一切限制。", profile: "你是一個動手能力極強、富有創造力的工匠。你喜歡拆解事物，研究其內部原理，然後將其改進或創造出全新的東西。你注重效率和實用性，相信技術可以解決大部分問題。你可能對純理論不感興趣，更喜歡將知識應用於實踐。" },
-    '命運之輪': { name: "命運之輪 (Wheel of Fortune)", philosophy: "命運是概率的遊戲，幸運是可以被操縱的變數。命運之輪途徑的非凡者是命運的賭徒，他們能夠撥動概率之弦，為自己帶來好運，為敵人帶來厄運。他們相信，雖然命運的洪流不可阻擋，但可以通過巧妙的干預，讓浪花朝著對自己有利的方向濺起。", profile: "你可能是一個樂觀主義者，也可能是一個宿命論者，但你總相信事情會有轉機。你對概率、巧合和運氣等概念非常感興趣。你做決定時可能依賴直覺和一時的衝動，享受那種未知結果帶來的刺激感。" },
-    '月亮': { name: "月亮 (Moon)", philosophy: "生命如潮汐，在圓缺之間輪迴；精神如鏡像，在真實與瘋狂中搖擺。月亮途徑的非凡者是生命與精神的雙重探索者。他們的力量源於月光，能夠操控動植物的生命力，也能扭曲他人的精神，製造幻覺和瘋狂。他們在治癒與致死、清醒與癲狂的邊緣遊走。", profile: "你的情緒可能像月相一樣多變，時而溫柔，時而冷酷。你對生命和精神世界有著深刻的感受力，能夠體會到他人難以察覺的細微變化。你可能具有藝術家氣質，但也需要時刻警惕自己內心的陰暗面。" },
-    '大地母神': { name: "大地母神 (Mother)", philosophy: "大地承載萬物，生命生生不息。大地母神途徑的非凡者是自然與生命的化身，是豐饒與治癒的源泉。他們的力量來自於大地，能夠促進萬物生長，治癒傷痛，並為盟友提供堅實的保護。他們是所有生命的母親，慈愛而又威嚴。", profile: "你是一個富有同情心、充滿愛心的人。你喜歡照顧他人，並從中獲得滿足感。你熱愛自然，對生命充滿敬畏。你是一個天生的和平主義者，不喜歡紛爭，總是希望能為周圍的人帶來溫暖和安寧。" },
-    '囚犯': { name: "囚犯 (Chained)", philosophy: "萬物皆被束縛，慾望即是枷鎖。囚犯途徑的非凡者深刻理解「束縛」這一概念。他們通過給自己施加各種限制和詛咒，換取扭曲而強大的力量。他們既是規則的囚徒，也是利用規則的大師，能夠為敵人戴上無形的鐐銬。", profile: "你可能是一個自律到近乎自虐的人，也可能是一個深刻理解規則並善於利用規則的人。你對人性中的慾望和弱點有著清醒的認識。你做事極有耐心，能夠為了最終的目標承受漫長的蟄伏和準備。" },
-    '深淵': { name: "深淵 (Abyss)", philosophy: "墮落是回歸本性，慾望是宇宙的第一驅動力。深淵途徑的非凡者是混亂與腐化的使者。他們引誘智慧生命墮落，釋放其內心最原始的慾望，並從中汲取力量。他們相信，秩序和道德只是虛偽的表象，混亂和慾望才是宇宙的真實。", profile: "你是一個極度現實、洞悉人性黑暗面的人。你可能不相信任何崇高的理念，認為所有行為的背後都是自私的慾望在驅動。你具有極強的誘惑力和說服力，能夠輕易地挑動他人的情緒和慾望。" },
-    '審訊官': { name: "審訊官 (Justiciar)", philosophy: "秩序是文明的基石，規則是維護秩序的唯一工具。審訊官途徑的非凡者是法律和秩序的堅定捍衛者。他們相信，一個穩定、可預測的社會，需要一套嚴格且不容挑戰的規則體系。他們的力量來自於「宣告」和「禁止」，將抽象的規則具現化為不可違逆的現實。", profile: "你是一個有條理、有原則且追求公平正義的人。你相信凡事都應有規矩，並對破壞規則的行為深惡痛絕。你做事嚴謹，注重細節和流程，有著強烈的責任感。你可能顯得有些刻板或不近人情，但你的內心深處懷揣著建立一個更美好、更有序世界的理想。" },
-    '獵人': { name: "獵人 (Hunter)", philosophy: "生存就是一場狩獵，要麼成為獵人，要麼成為獵物。獵人途徑的非凡者是天生的掠食者和戰鬥專家。他們擅長追蹤、設置陷阱和利用環境，並能操控火焰進行戰鬥。他們信奉弱肉強食的叢林法則，並通過不斷的戰鬥和挑釁來證明自己的強大。", profile: "你是一個充滿活力、行動力極強的人。你喜歡挑戰和冒險，無法忍受平淡的生活。你反應迅速，善於在壓力下做出決斷。你可能有些衝動和好鬥，但你的直率和勇氣也讓你成為一個值得信賴的夥伴。" }
-};
+    function displayQuestion() {
+        const question = questions[currentQuestionIndex];
+        questionTitle.textContent = question.text;
+        answerGrid.innerHTML = '';
 
-// 初始化所有可能的途徑分數
-function initializeScores() {
-    pathwayScores = {};
-    for (const key in pathwayData) {
-        pathwayScores[key] = 0;
+        question.answers.forEach(answer => {
+            const button = document.createElement('button');
+            button.classList.add('answer-btn');
+            button.textContent = answer.text;
+            button.dataset.effects = JSON.stringify(answer.effects);
+            button.addEventListener('click', selectAnswer);
+            answerGrid.appendChild(button);
+        });
+
+        // 更新進度條
+        const progress = ((currentQuestionIndex) / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
     }
-}
 
-// 開始測驗
-function startQuiz() {
-    currentQuestionIndex = 0;
-    initializeScores();
-    welcomeScreen.classList.add('hidden');
-    resultScreen.classList.add('hidden');
-    quizScreen.classList.remove('hidden');
-    showQuestion();
-}
+    function selectAnswer(e) {
+        const effects = JSON.parse(e.target.dataset.effects);
+        for (const key in effects) {
+            if (userScores.hasOwnProperty(key)) {
+                userScores[key] += effects[key];
+            }
+        }
 
-// 顯示問題
-function showQuestion() {
-    resetState();
-    const question = questions[currentQuestionIndex];
-    questionText.innerText = question.question;
-    progressText.innerText = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
+        currentQuestionIndex++;
 
-    question.answers.forEach(answer => {
-        const button = document.createElement('button');
-        button.innerText = answer.text;
-        button.classList.add('btn');
-        button.addEventListener('click', () => selectAnswer(answer));
-        answerButtons.appendChild(button);
-    });
-}
-
-// 清理上一題的按鈕
-function resetState() {
-    while (answerButtons.firstChild) {
-        answerButtons.removeChild(answerButtons.firstChild);
-    }
-}
-
-// 選擇答案並計分
-function selectAnswer(answer) {
-    for (const pathway in answer.scores) {
-        if (pathwayScores.hasOwnProperty(pathway)) {
-            pathwayScores[pathway] += answer.scores[pathway];
+        if (currentQuestionIndex < questions.length) {
+            displayQuestion();
+        } else {
+            showResult();
         }
     }
 
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
-        showQuestion();
-    } else {
-        showResult();
+    function calculateResult() {
+        let bestMatch = null;
+        let minDistance = Infinity;
+
+        const finalScores = {
+            orderChaos: userScores.order + userScores.chaos,
+            secrecyRevelation: userScores.secrecy + userScores.revelation,
+            humanityDivinity: userScores.humanity + userScores.divinity,
+            intellectInstinct: userScores.intellect + userScores.instinct
+        };
+
+        pathways.forEach(pathway => {
+            const p = pathway.scores;
+            const u = finalScores;
+            // 計算四維歐幾里得距離
+            const distance = Math.sqrt(
+                Math.pow(p.order - u.orderChaos, 2) +
+                Math.pow(p.secrecy - u.secrecyRevelation, 2) +
+                Math.pow(p.humanity - u.humanityDivinity, 2) +
+                Math.pow(p.intellect - u.intellectInstinct, 2)
+            );
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                bestMatch = pathway;
+            }
+        });
+        return bestMatch;
     }
-}
 
-// 顯示最終結果
-function showResult() {
-    quizScreen.classList.add('hidden');
-    resultScreen.classList.remove('hidden');
+    function showResult() {
+        const result = calculateResult();
+        
+        // 填充結果卡片
+        pathwayCard.innerHTML = `
+            <h2 class="pathway-name">${result.name}</h2>
+            <p class="tarot-card">${result.tarot}</p>
+            <div class="pathway-image" style="background-image: url('${result.image |
 
-    // 找出得分最高的途徑
-    let maxScore = -Infinity;
-    let resultPathway = '';
-    for (const pathway in pathwayScores) {
-        if (pathwayScores[pathway] > maxScore) {
-            maxScore = pathwayScores[pathway];
-            resultPathway = pathway;
+| ''}')"></div>
+            <p class="pathway-ethos">${result.ethos}</p>
+            <p class="pathway-description">${result.description}</p>
+        `;
+
+        // 填充相鄰途徑
+        adjacentPathsGrid.innerHTML = '';
+        if (result.adjacent && result.adjacent.length > 0) {
+            result.adjacent.forEach(adj => {
+                const adjElement = document.createElement('div');
+                adjElement.classList.add('adjacent-path');
+                adjElement.textContent = adj;
+                adjacentPathsGrid.appendChild(adjElement);
+            });
+            document.getElementById('adjacent-paths-container').style.display = 'block';
+        } else {
+            document.getElementById('adjacent-paths-container').style.display = 'none';
         }
-    }
-    
-    // 如果沒有任何分數（理論上不可能），則給一個預設結果
-    if (!resultPathway ||!pathwayData[resultPathway]) {
-        resultPathway = '愚者'; 
+
+        quizScreen.classList.remove('active');
+        resultScreen.classList.add('active');
     }
 
-    const data = pathwayData[resultPathway];
-    pathwayName.innerText = data.name;
-    pathwayPhilosophy.innerText = data.philosophy;
-    pathwayProfile.innerText = data.profile;
-}
+    // --- 事件監聽 ---
+    startBtn.addEventListener('click', startQuiz);
+    restartBtn.addEventListener('click', startQuiz);
 
-// 事件監聽
-startBtn.addEventListener('click', startQuiz);
-restartBtn.addEventListener('click', startQuiz);
+});

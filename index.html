@@ -3,46 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>詭秘之主：非凡途徑心理評估</title>
+    <title>非凡途徑神諭</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Uncial+Antiqua&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div id="welcome-screen">
-            <h1>詭秘之主</h1>
-            <h2>非凡途徑心理評估</h2>
-            <p>蒸汽與機械的浪潮中，誰能觸及非凡？歷史和黑暗的迷霧裡，又是誰在耳語？</p>
-            <p>本評估將透過一系列情境抉擇，探尋你靈魂深處的傾向，揭示你最有可能踏上的非凡途徑。請遵循你的直覺，做出最真實的選擇。</p>
-            <button id="start-btn">開始評估</button>
-        </div>
 
-        <div id="quiz-screen" class="hidden">
-            <div id="question-container">
-                <p id="question-text"></p>
+    <main>
+        <section id="intro-screen" class="screen active">
+            <div class="intro-content">
+                <h1>非凡途徑神諭</h1>
+                <p>在命運的十字路口，你聽到了來自星界的低語。</p>
+                <p>每一次選擇，都是靈魂的迴響。每一次回答，都將描繪出你潛在的非凡輪廓。</p>
+                <p>閉上雙眼，傾聽內心，讓神諭指引你……踏上那條屬於你的，從人至神的旅途。</p>
+                <button id="start-btn" class="cta-button">開始占卜</button>
             </div>
-            <div id="answer-buttons" class="btn-grid">
-                </div>
+        </section>
+
+        <section id="quiz-screen" class="screen hidden">
             <div id="progress-container">
-                <p id="progress-text"></p>
+                <div id="progress-bar"></div>
             </div>
-        </div>
+            <h2 id="question-title">問題將會顯示在這裡</h2>
+            <div id="answer-grid">
+                </div>
+        </section>
 
-        <div id="result-screen" class="hidden">
-            <h2>你的評估結果</h2>
-            <h3 id="pathway-name"></h3>
-            <p id="pathway-honorific" class="honorific"></p>
-            <h4>核心哲學</h4>
-            <p id="pathway-philosophy"></p>
-            <h4>心理檔案</h4>
-            <p id="pathway-profile"></p>
-            <h4>關鍵能力</h4>
-            <p id="pathway-abilities"></p>
-            <button id="restart-btn">重新評估</button>
-        </div>
-    </div>
+        <section id="result-screen" class="screen hidden">
+            <div class="result-container">
+                <p class="result-prelude">命運的齒輪已經轉動，星辰為你顯現了道路…</p>
+                <div id="pathway-card">
+                    </div>
+                <div id="adjacent-paths-container">
+                    <h3>靈魂的共鳴</h3>
+                    <p>在你的命運之線中，還交織著以下途徑的影子：</p>
+                    <div id="adjacent-paths-grid">
+                        </div>
+                </div>
+                <button id="restart-btn" class="cta-button">重新占卜</button>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
