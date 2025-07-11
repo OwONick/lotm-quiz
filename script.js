@@ -1,264 +1,463 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // DOM 元素獲取
-    const startScreen = document.getElementById('start-screen');
-    const questionScreen = document.getElementById('question-screen');
-    const resultScreen = document.getElementById('result-screen');
+    // DOM Elements
     const startBtn = document.getElementById('start-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const quizIntro = document.getElementById('quiz-intro');
+    const quizContainer = document.getElementById('quiz-container');
+    const resultContainer = document.getElementById('result-container');
     const questionText = document.getElementById('question-text');
-    const questionNumber = document.getElementById('question-number');
     const answerButtons = document.getElementById('answer-buttons');
     const progressBar = document.getElementById('progress-bar');
-    const restartBtn = document.getElementById('restart-btn');
 
-    // 結果顯示元素
-    const resultSymbolContainer = document.getElementById('result-symbol-container');
-    const resultTitle = document.getElementById('result-title');
+    // Result display elements
+    const resultPathwayName = document.getElementById('result-pathway-name');
+    const resultPrevalence = document.getElementById('result-prevalence');
     const resultPersonality = document.getElementById('result-personality');
-    const resultPowers = document.getElementById('result-powers');
+    const resultAbilities = document.getElementById('result-abilities');
 
-    // 測驗狀態變數
     let currentQuestionIndex = 0;
     let scores = {};
 
-    // 途徑數據
+    // Data for the 22 pathways
     const pathways = {
-        fool: { name: "愚者途徑：命運的欺詐師", personality: "你是一位矛盾的大師，行走在強大力量與深刻謙卑的鋼絲上。你看得見命運的絲線，並且忍不住想去俏皮地撥弄一下，但你從未忘記，自己也只是更宏大舞台上的一名演員。你善於利用信息差和誤導來達成目的，常以玩笑或故作神秘的姿態示人，但內心深處，你對宇宙的浩瀚與不可知懷有最深的敬畏。你享受操縱的樂趣，卻也明白每一次操縱都可能帶來無法預料的後果。", powers: "你的能力圍繞著「欺騙」與現實敘事的操縱。你能夠占卜未來，從歷史的塵埃中召喚虛影，最終甚至能「愚弄」時間與命運本身，創造出凡人眼中的奇蹟。你的秘偶將成為你意志的延伸，而你的每一次「嫁接」，都是對現實規則的一次大膽改寫。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="var(--color-primary)" stroke-width="3" d="M50 20 A30 30 0 0 1 50 80 A30 30 0 0 1 50 20 M30 50 Q50 30 70 50 M30 50 Q50 70 70 50"/></svg>` },
-        door: { name: "門途徑：空間的漫遊者", personality: "你是一個天生的探索者，對你而言，任何形式的束縛都是不可忍受的。牆壁、距離、規則、秘密，這些在他人眼中的障礙，在你眼中都只是一扇扇等待被打開的「門」。你充滿好奇心，熱愛旅行，享受學習新知識和體驗不同文化的過程。你極度自信，相信無論陷入何種困境，總有辦法可以「離開」。你不屬於任何地方，因為所有地方都是你的驛站。", powers: "你的權柄在於空間的絕對自由。你可以輕易地穿過物理阻礙，透過「漫遊」瞬間抵達千里之外。更重要的是，你能「記錄」並複製他人的非凡能力，使你成為一個能力多樣、難以預測的對手。在高處，你甚至能扭曲和封印空間本身，成為真正意義上的空間之王。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="25" y="15" width="50" height="70" rx="5" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="65" cy="50" r="3" fill="var(--color-primary)"/></svg>` },
-        error: { name: "錯誤途徑：規則的寄生者", personality: "你是系統中的「Bug」，是秩序的解構者。你堅信世上沒有完美無缺的事物，任何規則都存在可供利用的漏洞。你享受欺詐、惡作劇和利用他人弱點所帶來的智力上的優越感。你的道德觀念非常靈活，對你而言，規則不是用來遵守的，而是用來打破和利用的。你像一個寄生蟲，在龐大系統的縫隙中汲取養分，活得瀟灑而危險。", powers: "你的核心能力是「偷盜」。你偷的不是財物，而是概念——他人的思想、壽命、非凡能力，甚至是空間中的「距離」。你能「寄生」於他人身上，完美地隱藏自己。最終，你能製造「錯誤」，讓現實按照你的意願出現故障，並能操縱「時之蟲」來竊取和扭曲時間。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M35 65 L65 35" stroke="var(--color-primary)" stroke-width="3"/><path d="M30 30 L40 40" stroke="var(--color-primary)" stroke-width="3" stroke-dasharray="4 4"/></svg>` },
-        visionary: { name: "空想家途徑：現實的織夢師", personality: "你是個天生的觀察家和心理學家。你習慣於站在人群之外，冷靜地分析每個人的言行舉止、情緒波動和內心動機。你擁有極強的共情能力，卻又能輕易地將自己抽離，不被情感所左右。你相信思想擁有力量，現實不過是集體心靈的投射。你的內心世界極其豐富，充滿了各種奇思妙想，並渴望有一天能將這些「空想」變為現實。", powers: "你的力量源於心靈。你能輕易看穿他人的謊言，進入並編織夢境。你可以透過催眠和暗示來影響他人。隨著力量的增長，你將成為「作家」，編寫童話影響現實。最終，作為「空想家」，你的思想將擁有直接創造物質和生命的力量，成為現實的定義者。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 C 30 20, 70 20, 90 50 C 70 80, 30 80, 10 50 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="10" fill="var(--color-primary)"/></svg>` },
-        sun: { name: "太陽途徑：光明的頌揚者", personality: "你是個充滿正能量和理想主義的人。你堅信光明與正義，並願意為此奉獻一切。你性格開朗、熱情，像太陽一樣能給周圍的人帶來溫暖和勇氣。你厭惡邪惡與墮落，並將其視為自己的責任去淨化。你的內心充滿了堅定的信仰，無論是對於神明，還是對於某種崇高的理念，這份信仰是你所有力量的源泉。", powers: "你的能力是光與火的純粹體現。你能召喚神聖的光芒和火焰，驅散黑暗，淨化邪惡。你能透過「公證」讓言出法隨，也能用歌聲鼓舞士氣。在高處，你能創造「無暗領域」，讓一切陰影無所遁形，成為行走的太陽，是所有黑暗與亡靈天生的克星。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="25" fill="var(--color-primary)"/><g stroke="var(--color-primary)" stroke-width="3"><line x1="50" y1="10" x2="50" y2="20"/><line x1="50" y1="80" x2="50" y2="90"/><line x1="10" y1="50" x2="20" y2="50"/><line x1="80" y1="50" x2="90" y2="50"/><line x1="22" y1="22" x2="29" y2="29"/><line x1="71" y1="71" x2="78" y2="78"/><line x1="22" y1="78" x2="29" y2="71"/><line x1="71" y1="29" x2="78" y2="22"/></g></svg>` },
-        tyrant: { name: "暴君途徑：風暴的化身", personality: "你崇尚絕對的力量與權威。你性格果斷、強勢，甚至有些霸道。你不喜歡陰謀詭計，更傾向於用壓倒性的力量正面碾壓一切敵人。你就像一場無法被馴服的風暴，喜怒無常，威力無窮。你尊重強者，蔑視弱者，堅信在絕對的力量面前，一切技巧都蒼白無力。", powers: "你掌控著自然界最狂暴的力量——風暴、雷電與海洋。你能掀起颶風，召喚閃電，引發海嘯。你的速度如雷光一閃，你的怒火能讓天地變色。在高處，你就是行走的天災，是神話中執掌雷霆的憤怒神明。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,10 30,50 70,50" fill="var(--color-primary)"/><path d="M40 50 Q50 70 60 50 T40 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        white_tower: { name: "白塔途徑：知識的求索者", personality: "你是個終身的學習者和研究者。你對世界抱有無限的好奇心，並堅信所有問題都能透過知識和邏輯來解答。你享受泡在圖書館或實驗室裡的時光，對你而言，一個新的理論或發現遠比世俗的財富和權力更有吸引力。你理性、嚴謹、有耐心，相信知識就是力量，而你，正走在通往全知的道路上。", powers: "你的大腦就是你最強大的武器。你擁有過目不忘的記憶力和超凡的分析能力。你能透過理解來「模仿」他人的非凡能力，並能基於自己的知識體系「創造」出全新的法術。在高處，你能「認知」世界的底層規律，成為一個無所不知的智者。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30 90 V 10 L 70 20 V 90 L 50 80 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M30 10 H 70" stroke="var(--color-primary)" stroke-width="3"/></svg>` },
-        hanged_man: { name: "倒吊人途徑：犧牲的奉獻者", personality: "你的世界觀深刻而殘酷。你明白「等價交換」是宇宙的根本法則之一，要得到，必先付出。你願意為了目標承受巨大的痛苦，甚至進行自我犧牲。這種哲學也讓你對他人抱持著一種冷酷的視角，將他們視為可以被「奉獻」或「牧養」的資源。你行走在墮落與神聖的邊緣，對痛苦有著超乎常人的理解和忍耐力。", powers: "你的力量源於犧牲與墮落。你能操控陰影，更能「牧養」被你擊敗的敵人的靈魂，使用他們的能力。你對腐化和衰敗有著天然的親和力。在高處，你將成為「瀆神長老」，透過理解更深層次的墮落來換取力量，是一個極度危險和詭異的存在。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 V 80 M20 20 H 80 M50 80 L30 60 M50 80 L70 60" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="50" cy="35" r="10" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        darkness: { name: "永暗途徑：寂靜的守護者", personality: "你是一個尋求寧靜與秩序的人。你並不懼怕黑暗，反而能在其中找到安寧。你性格沉穩、內斂，不喜歡喧囂和混亂。你像一個守夜人，默默守護著世界的秘密和沉睡者的夢境。你相信黑暗並非邪惡，而是宇宙平衡不可或缺的一部分，是光明的終點，也是新生的起點。", powers: "你是黑暗與隱匿的大師。你能輕易地融入陰影，讓敵人無法察覺。你能將對手拖入可怕的夢魘，用恐懼摧毀他們的意志。在高處，你能創造「永寂之河」，剝奪一切光與聲音，最終更能執掌「終結」的權柄，讓萬物歸於寂靜。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 10 C 20 40, 20 60, 50 90 C 80 60, 80 40, 50 10 Z" fill="var(--color-secondary)" stroke="var(--color-primary)" stroke-width="3"/><path d="M50 10 C 40 40, 40 60, 50 90" fill="var(--color-background)"/></svg>` },
-        death: { name: "死神途徑：終焉的引路人", personality: "你對生命和死亡有著深刻而超然的理解。你尊重死亡的秩序，將其視為所有生命平等的終點。你富有同情心，能夠安撫亡魂，引導他們走向安息。但同時，你又擁有不可動搖的決斷力，在必要時執行死亡的判決。你行走於生死之間，是亡者的君王，也是靈魂的引導者。", powers: "你與靈界有著天然的聯繫。你能與亡魂溝通，也能奴役和指揮亡靈為你作戰。你能直接攻擊敵人的靈魂，也能宣告一個生命的「死亡」。在高處，你將成為冥界的統治者，你所在之處，就是亡者的國度。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30 90 Q 50 50, 70 90 M50 10 V 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="50" cy="30" r="15" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        twilight_giant: { name: "黃昏巨人途徑：堅毅的守望者", personality: "你是個沉默而可靠的守護者。你性格堅毅、不屈不撓，信奉用行動而非言語來證明自己。你就像一座山，永遠鎮守在需要你的地方，為身後的人撐起一片天。你身上有一種宿命般的悲壯感，既有迎接黎明的希望，也明白黃昏的必然到來。你是秩序的捍衛者，是戰場上最堅實的壁壘。", powers: "你的身體就是你最強大的武器。你擁有巨人的力量和體魄，以及對各種武器的精通。你能釋放「黎明之光」，驅散邪惡。你最核心的能力是「守護」，能創造出幾乎無法被打破的防禦。在高處，你將獲得「衰敗」的權柄，成為執掌終結與榮光的巨人。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="35" y="20" width="30" height="60" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="8" fill="var(--color-primary)"/></svg>` },
-        demoness: { name: "魔女途徑：災禍的藝術家", personality: "你是一個危險而迷人的存在。你對人性的陰暗面有著深刻的洞察，並享受挑動他人的痛苦、恐懼和絕望。你像一個藝術家，而災禍就是你的作品。你充滿魅力，擅長誘惑和操縱，但內心深處卻是絕對的冷酷。你的人生是一場追求極致刺激和愉悅的盛宴，而他人的不幸，正是你最好的調味品。", powers: "你的能力旨在散播災禍。你能製造各種可怕的「瘟疫」，也能直接攻擊精神，造成劇烈的「痛苦」。你擁有鏡界能力，極難被殺死，可以透過任何鏡面復活。你的凝視能將敵人「石化」，你的存在本身就是一場移動的災難。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,20 C 70,20 80,40 80,50 C 80,60 70,80 50,80 C 30,80 20,60 20,50 C 20,40 30,20 50,20" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M40 40 L60 60 M60 40 L40 60" stroke="var(--color-accent)" stroke-width="3"/></svg>` },
-        red_priest: { name: "紅祭司途徑：戰爭的點燃者", personality: "你是天生的領袖和征服者。你熱愛競爭，享受勝利，並堅信戰爭是推動歷史前進的車輪。你極富魅力，擅長演說，能輕易地點燃他人心中的火焰，讓他們為你赴湯蹈火。你是一個野心家、陰謀家和戰略家，你的人生目標就是不斷地征服，建立一個又一個屬於你的功業。", powers: "你是戰爭之神。你掌控著毀滅性的「火焰」，能用戰吼強化友軍、削弱敵人。你擅長策劃「陰謀」，挑起紛爭。你的核心力量在於「統領」，你建立的軍隊越強大，你的力量就越強。在你征服的土地上，你就是唯一的王。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 10 L 90 90 L 10 90 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 10 L 50 50" stroke="var(--color-primary)" stroke-width="3"/><path d="M30 50 L 70 50" stroke="var(--color-primary)" stroke-width="3"/></svg>` },
-        hermit: { name: "窺秘人途徑：奧秘的隱士", personality: "你是個純粹的學者，對世界的奧秘有著無盡的渴求。相比於人際交往，你更喜歡沉浸在古老的典籍和神秘的符號中。你享受解開謎題的過程，知識本身對你來說就是最高的回報。你可能有些不善言辭，甚至有些孤僻，但你的大腦中裝著一個無比宏大而深邃的世界。", powers: "你的力量與知識深度直接掛鉤。你精通各種「神秘學」知識，能施展複雜的魔法和巫術。你擅長「星象占卜」，能窺見未來的軌跡。在高處，你能「重現」甚至創造魔法，並能直接與宇宙的信息之海相連，成為一個活著的圖書館。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="35" stroke="var(--color-primary)" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="5" fill="var(--color-primary)"/><path d="M50 15 V 85 M15 50 H 85 M25.7 25.7 L 74.3 74.3 M25.7 74.3 L 74.3 25.7" stroke="var(--color-primary)" stroke-width="2" fill="none"/></svg>` },
-        paragon: { name: "通識者途徑：現實的創造者", personality: "你是個務實的理想主義者，一個天生的工匠和發明家。你相信知識的價值在於應用，你熱衷於親手將理論和藍圖變為現實。你享受創造的過程，無論是精密的機械，還是神奇的煉金藥劑。你動手能力極強，富有創造力，並堅信技術能夠改變世界。", powers: "你的雙手能創造奇蹟。你精通各種「機械製造」和「物品製作」。你是「鍊金術」的大師，能點石成金。你的發明創造能夠推動文明的進步。在高處，你將執掌「科技」與「創造」的權柄，成為一個能用雙手塑造未來的神。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 30 V 10 M50 70 V 90 M30 50 H 10 M70 50 H 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        wheel_of_fortune: { name: "命運之輪途徑：概率的賭徒", personality: "你的人生是一場巨大的賭博。你對命運和概率有著天生的敏感，並敢於在關鍵時刻押上一切。你可能時而極度幸運，時而又倒楣透頂。你的人生充滿了起伏和不確定性，但你卻樂在其中。你相信，只要活得夠久，總有機會翻盤。你是一個在命運的輪盤上跳舞的賭徒，既瘋狂又清醒。", powers: "你掌控著虛無縹緲的「命運」。你能讓自己變得極度「幸運」，也能給敵人帶去「災禍」。你能直接操縱「概率」，讓小概率事件必然發生。在高處，你甚至能「重啟」命運，讓時間倒流，回到某個關鍵的抉擇點，成為真正的命運之主。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 10 V 90 M10 50 H 90 M22 22 L 78 78 M22 78 L 78 22" stroke="var(--color-primary)" stroke-width="2" fill="none"/></svg>` },
-        mother: { name: "母親途徑：生命的孕育者", personality: "你充滿了母性的光輝，對生命懷有深沉的愛與關懷。你溫柔、善良、富有同情心，是天生的滋養者和保護者。你與自然有著緊密的聯繫，熱愛土地和生命。你相信生命的頑強與美好，並願意為守護這份美好而付出一切。你的存在本身，就是豐饒與希望的象徵。", powers: "你是生命與自然的化身。你能促進植物的瘋狂生長，能治療最嚴重的傷勢。你擁有無比旺盛的「生命力」，極難被殺死。你的領域之內，萬物復甦，生機盎然。在高處，你就是大地本身，是所有生命的源頭。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 90 C 20 60, 20 40, 50 10 C 80 40, 80 60, 50 90 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M50 50 m -10, 0 a 10,10 0 1,0 20,0 a 10,10 0 1,0 -20,0" fill="var(--color-primary)"/></svg>` },
-        moon: { name: "月亮途徑：變幻的誘惑者", personality: "你是一個充滿神秘魅力和雙重性的個體。你像月亮一樣，既有皎潔美麗的一面，也有引人瘋狂的陰暗面。你擅長利用自己的魅力來「蠱惑」人心，達到自己的目的。你性格多變，令人難以捉摸。你享受在不同身份和姿態之間切換的樂趣，對血液和黑夜有著特殊的偏好。", powers: "你駕馭著月亮的力量。你能在月光下獲得極大的增幅，並能化身為月光躲避攻擊。你能製造強大的幻術，也能「召喚」來自靈界的強大生物。你擁有「吸血鬼」の特質，能透過血液轉化僕從，並擁有強大的恢復能力。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M 50 10 A 40 40 0 1 0 50 90" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M 50 20 A 30 30 0 1 0 50 80" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        abyss: { name: "深淵途徑：欲望的沉淪者", personality: "你選擇了直面內心最黑暗的欲望。你不再壓抑，而是選擇徹底地釋放和沉淪。你從罪惡、恐懼和墮落中汲取力量和快感。你可能是個殘忍的暴徒，也可能是個優雅的惡魔，但本質都是一樣的——你是欲望的奴隸。你蔑視道德和秩序，只追隨自己內心的衝動。", powers: "你是行走的「深淵」。你的話語能引發他人內心的「欲望」，你的存在能「腐化」周圍的環境。你能散播「恐懼」，召喚來自深淵的「惡魔」。你越是墮落，力量就越是強大，最終，你自身將成為一個污染世界的腐蝕之源。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L50 20 L80 80 Z" stroke="var(--color-primary)" stroke-width="3" fill="none" transform="rotate(180 50 50)"/><circle cx="50" cy="50" r="5" fill="var(--color-accent)"/></svg>` },
-        chained: { name: "被縛者途徑：苦痛的修行者", personality: "你選擇了一條與欲望完全相反的道路——束縛與忍耐。你的人生充滿了各種各樣的痛苦和詛咒，但你並未被其擊垮，反而學會了在束縛中磨練自己的意志。你像一個苦行僧，用痛苦來淨化靈魂。你沉默寡言，意志力極其堅定，對痛苦有著超乎常人的忍耐力。你相信，真正的力量來自於對自我的絕對控制。", powers: "你的力量源於你所承受的「詛咒」和「痛苦」。你能將施加在自己身上的傷害轉移或反彈給敵人。你能製造沒有生命的「傀儡」為你戰鬥。在高處，你能將敵人「變形」為無害的動物，並將自己化為詛咒的源頭，成為一個觸碰不得的禁忌存在。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="20" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M30 50 H 70 M50 30 V 70" stroke="var(--color-primary)" stroke-width="3" fill="none"/></svg>` },
-        black_emperor: { name: "黑皇帝途徑：秩序的扭曲者", personality: "你是個天生的權謀家。你看透了秩序的本質——它只是強者用來統治弱者的工具。你熱衷於制定複雜、繁瑣的「規則」，不是為了維護公平，而是為了在其中留下後門和漏洞，供自己利用。你擅長鑽營、賄賂和利用法律，最終目標是建立一個完全服務於你個人意志的、扭曲的帝國。", powers: "你是規則的漏洞。你能「扭曲」現實中的規則，也能利用「賄賂」來影響非凡能力的效果。你最核心的能力是「復活」。只要你預先建造的陵墓和制定的規則還在，你就幾乎是不死的。想徹底殺死一個黑皇帝，最好的辦法就是扶持一個新的黑皇帝來取代他。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L 50 20 L 80 80 Z" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M35 60 H 65" stroke="var(--color-primary)" stroke-width="3"/></svg>` },
-        justiciar: { name: "審判者途徑：戒律的化身", personality: "你是秩序和戒律的絕對化身。你堅信規則神聖不可侵犯，並致力於維護一個公平、公正、有序的世界。你鐵面無私，不容許任何形式的混亂和違規。你就是行走的法律，你的話語就是判決。你可能顯得有些刻板和缺乏變通，但你代表著絕對的穩定和可靠。", powers: "你的權柄是「禁止」。你能用言語設定「戒律」，在你的權威範圍內，可以禁止飛行、禁止使用非凡能力、禁止說謊。你能「削弱」神秘的力量，強化物理的規則。在你的「法庭」領域內，你就是至高無上的法官，任何違背你戒律的行為都將受到「懲戒」。", symbol: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 H 80 M50 20 V 80" stroke="var(--color-primary)" stroke-width="3" fill="none"/><path d="M10 90 L 90 90" stroke="var(--color-primary)" stroke-width="3"/></svg>` },
+        seer: { 
+            name: "占卜家 (Seer)",
+            prevalence: "人群佔比：約4%",
+            personality: "你天生謹慎，習慣於在行動前進行周密的規劃與預演。你對世界的認知並非非黑即白，而是充滿了變數與可能性。你享受隱藏在幕後，透過精巧的佈局引導事態發展，而非親身涉險。你對神秘事物有著強烈的好奇心，但同時也保持著敬畏。面對困境，你會以幽默和表演來掩飾真實的情緒，如同一個戴著微笑面具的小丑，在命運的舞台上堅韌地演出。你的內心深處，是對人性的深刻洞察和一份不願捨棄的溫情，這是在神性侵蝕下，你賴以維持自我的最後壁壘。",
+            abilities: "你的能力圍繞「變化」與「欺騙」。從占卜預測、靈性直覺，到變化容貌的「無面人」，再到操縱他人命運絲線的「秘偶大師」，最終能夠愚弄規則、歷史乃至概念本身。"
+        },
+        marauder: {
+            name: "偷盜者 (Marauder)",
+            prevalence: "人群佔比：約2%",
+            personality: "你是一個天生的機會主義者，善於發現規則中的漏洞並加以利用。你思維敏捷，行事果斷，對目標有著極強的執著。你不相信絕對的所有權，認為一切事物都在流轉之中，而你有能力加速這個過程。欺騙與詐術是你的第二天性，你享受將他人玩弄於股掌之間的智力快感。然而，你的內心深處可能隱藏著對權威的蔑視和對自由的極度渴望，盜竊不僅是手段，更是對既定秩序的一種反抗。",
+            abilities: "你的能力是「盜竊」概念的極致延伸。從偷取實物，到竊取思想的「竊夢家」，再到寄生他人、盜用身份的「寄生者」，最終甚至能盜走時間、竊取權柄、在邏輯層面製造「錯誤」。"
+        },
+        apprentice: {
+            name: "學徒 (Apprentice)",
+            prevalence: "人群佔比：約3%",
+            personality: "你對世界充滿了探索欲，渴望遊歷四方，見證不同的風景與奇蹟。你討厭被束縛在一個地方，認為自由移動是生命的基本權利。你擁有出色的記憶力和學習能力，善於記錄和複製你所見到的知識與力量。你並非一個好鬥之人，更傾向於利用靈活的機動性來避免衝突。你對空間和星辰有著特殊的親和感，相信在可見的世界之外，還存在著更廣闊的領域等待探索。",
+            abilities: "你的能力核心是「空間」與「記錄」。你可以輕易穿梭門窗，進行短距離的「旅行」，記錄並複製他人的非凡能力，最終打開通往任何地方的「門」，在星界中漫遊。"
+        },
+        spectator: {
+            name: "觀眾 (Spectator)",
+            prevalence: "人群佔比：約6%",
+            personality: "你習慣於保持距離，冷靜地觀察周圍的人和事。你擁有極強的同理心和洞察力，能夠輕易看穿他人的謊言和真實意圖。你對複雜的人際關係和群體心理有著濃厚的興趣，並能巧妙地引導和操縱它們。你內心世界豐富，時常沉浸在自己的思緒和構想中。對你而言，世界就像一場宏大的戲劇，而你既是觀眾，也是能在幕後修改劇本的導演。",
+            abilities: "你的能力是心靈層面的。從「讀心」，到「心理醫生」的治療與暗示，再到構建真實夢境的「織夢人」，最終能將想像化為現實，成為「空想家」。"
+        },
+        sun: {
+            name: "歌頌者 (Sun)",
+            prevalence: "人群佔比：約7%",
+            personality: "你充滿正義感，性格坦蕩，厭惡一切陰暗與邪惡。你天生具有領袖氣質，能夠鼓舞人心，讓周圍的人團結在你身邊。你堅信秩序、公平和榮耀，並願意為此付出一切。你行事光明正大，不屑於使用陰謀詭計。你的存在本身就能給人帶來溫暖和安全感，是天生的團隊核心和精神支柱。",
+            abilities: "你的能力與「光明」、「淨化」、「驅邪」息息相關。你能製造光和熱，治癒同伴，對亡靈和墮落生物造成巨大傷害，並能通過演說鼓舞士氣，最終化身為普照萬物的「太陽」。"
+        },
+        sailor: {
+            name: "水手 (Sailor)",
+            prevalence: "人群佔比：約7%",
+            personality: "你的性格暴烈直接，充滿攻擊性。你崇尚力量，相信絕對的權威來自於壓倒性的實力。你享受征服和破壞帶來的快感，面對挑戰時從不退縮。你的情緒如同風暴一般，來得快去得也快，但爆發時具有毀滅性的力量。在你的世界裡，規則由強者制定，而你立志成為最強者。你對海洋有著特殊的感情，視其為力量的源泉和征服的疆域。",
+            abilities: "你的能力是純粹的破壞與征服。駕馭風、雷、雨、電，掀起海嘯，召喚天災，你的力量是自然偉力的直接體現，充滿了壓迫感和毀滅性。"
+        },
+        reader: {
+            name: "閱讀者 (Reader)",
+            prevalence: "人群佔比：約6%",
+            personality: "你是一個典型的學者，對知識有著無盡的渴求。你善於推理、分析和總結，享受從紛繁複雜的線索中找出真相的過程。你相信知識就是力量，通過學習和研究可以掌握世間萬物的規律。你沉穩、內斂，不喜張揚，更願意在圖書館或實驗室中度過時光。你對神秘學有著極高的天賦，能夠洞悉事物背後的隱秘聯繫。",
+            abilities: "你的能力與知識和預言息息相關。從強化學習能力的「閱讀者」，到精通邏輯的「偵探」，再到掌握秘術的「秘術導師」，最終能夠窺視未來，通曉萬物，成為知識的化身「白塔」。"
+        },
+        secret_suppliant: {
+            name: "秘祈人 (Secret Suppliant)",
+            prevalence: "人群佔比：約3%",
+            personality: "你有著強烈的自我犧牲精神，願意為了某個崇高的目標或守護他人而承受巨大的痛苦。你內斂、隱忍，不善於表達自己的情感，習慣將苦難埋藏在心底。你對人性的墮落和掙扎有著深刻的理解，並試圖從中尋找救贖的可能。你常常被誤解，背負著不屬於自己的惡名，但你依然堅持自己的道路。你的力量源於墮落與獻祭，行走在神聖與污穢的邊緣。",
+            abilities: "你的能力充滿了詭異的自我獻祭色彩。通過承受傷害來換取力量，將自身或他人「牧養」成強大的怪物，最終成為一個需要被獻祭才能展現力量的「倒吊人」。"
+        },
+        sleepless: {
+            name: "不眠者 (Sleepless)",
+            prevalence: "人群佔比：約7%",
+            personality: "你習慣於在黑夜中保持清醒，對黑暗有著天然的親和力。你沉靜、穩重，有著超乎常人的耐心和毅力。你能夠看到並與靈體溝通，對死亡和亡者抱有敬畏之心。你是一個天生的守護者，致力於維護生與死的界限，抵禦來自黑暗的侵蝕。你享受孤獨，在寂靜中能找到內心的平靜與力量。你對夢境和秘密有著特殊的掌控力。",
+            abilities: "你的能力與黑夜、靈體和夢境緊密相連。你可以在黑暗中獲得力量，命令亡魂，製造噩夢，安撫死者，最終執掌黑夜與寂靜的權柄。"
+        },
+        corpse_collector: {
+            name: "收屍人 (Corpse Collector)",
+            prevalence: "人群佔比：約2%",
+            personality: "你對死亡有著深刻而冷靜的理解，將其視為生命循環的必然一環，而非恐懼的對象。你莊重、嚴肅，行事一絲不苟。你尊重逝者，並致力於讓他們得到應有的安息。你看淡生死離別，情緒穩定，很難被外界事物動搖。你相信終結是平等的，無論是帝王還是乞丐，在死亡面前都將歸於塵土。你的使命是引導亡魂，看守冥界之門。",
+            abilities: "你的能力圍繞「死亡」權柄。你可以與死者溝通，操縱屍體，宣告死亡，凋零生命，最終化身為「死神」，執掌萬物的終結。"
+        },
+        warrior: {
+            name: "戰士 (Warrior)",
+            prevalence: "人群佔比：約7%",
+            personality: "你崇尚武力，相信戰鬥是解決問題最直接有效的方式。你勇敢、堅毅，擁有鋼鐵般的意志和永不言敗的精神。你追求純粹的力量和速度，享受在戰鬥中不斷突破自我的感覺。你忠誠、可靠，是戰友最值得信賴的後盾。你或許不善言辭，但會用行動來證明自己的價值和榮耀。你渴望在戰場上證明自己，直至生命最後一刻。",
+            abilities: "你的能力是純粹的肉體強化與戰鬥技巧。超凡的力量、速度、防禦力和恢復能力，以及對武器的精通，讓你成為戰場上的絞肉機。高序列時更能化身為頂天立地的巨人。"
+        },
+        hunter: {
+            name: "獵人 (Hunter)",
+            prevalence: "人群佔比：約4%",
+            personality: "你是一個天生的獵手，但你享受的並非一擊斃命，而是通過不斷的挑釁、佈置陷阱來激怒和削弱獵物的過程。你極富耐心，善於觀察和等待最佳時機。你好鬥、富有侵略性，渴望通過戰爭和征服來證明自己的價值。你善於煽動情緒，製造混亂，並在混亂中攫取利益。你相信勝利高於一切，並會不擇手段地去爭取它。",
+            abilities: "你的能力與「火焰」、「戰爭」和「挑釁」相關。你精通陷阱和各種武器，能夠操縱火焰，煽動戰爭，並在戰場上獲得巨大的加成。最終目標是成為點燃戰火的「紅祭司」。"
+        },
+        demoness: {
+            name: "魔女 (Demoness)",
+            prevalence: "人群佔比：約1%",
+            personality: "你對人性的痛苦和絕望有著異乎尋常的敏感和興趣。你享受製造災難和散播恐懼的過程，並從中汲取力量。你極具魅力，能夠輕易地誘惑和操縱他人，讓他們為你服務，最終走向毀滅。你的情緒冷漠，將他人的痛苦視為悅耳的音樂。你認為美麗與災禍並存，極致的絕望中蘊含著別樣的美感。你的存在本身就是一場災難。",
+            abilities: "你的能力圍繞「災禍」、「痛苦」和「魅惑」。你可以散播瘟疫、製造不幸、施加惡毒的詛咒，並通過美貌和媚藥控制人心。高序列時更能引發天災級別的毀滅。"
+        },
+        hermit: {
+            name: "窺秘人 (Hermit)",
+            prevalence: "人群佔比：約3%",
+            personality: "你對世界充滿敬畏，深信在可見的表象之下隱藏著無數秘密。你是一個謹慎的探索者，渴望窺探神秘，但又深知其危險性，信奉「節制是美德」。你沉迷於魔法、巫術、煉金術等各種神秘學知識，並享受將其系統化、理論化的過程。你喜歡獨處，在安靜的環境中進行研究和實驗。你相信知識本身就是一種力量，也是一種需要小心對待的詛咒。",
+            abilities: "你的能力是典型的法師類型。你掌握全面的神秘學知識，能夠施展各種複雜的法術和儀式，製作魔法卷軸和物品，並在高序列時能夠預言未來，成為通曉萬物奧秘的「隱匿賢者」。"
+        },
+        paragon: {
+            name: "通識者 (Paragon)",
+            prevalence: "人群佔比：約5%",
+            personality: "你對世界的運行規律有著強烈的好奇心，並試圖用自己的雙手去解析和改造它。你是一個天生的發明家和工程師，相信通過技術可以解決一切問題。你動手能力極強，善於製造各種精密的機械和鍊金物品。你追求效率和實用性，對虛無縹緲的哲學不感興趣。你相信文明的進步源於技術的革新，並致力於成為那個推動齒輪轉動的人。",
+            abilities: "你的能力是將知識轉化為實物的「鍊金術」和「工程學」。你可以製造出從槍械大砲到鍊金傀儡，乃至於更為神奇的物品。高序列時甚至可以手搓核爆，解析並修改物理規則。"
+        },
+        assassin: {
+            name: "刺客 (Assassin)",
+            prevalence: "人群佔比：約1%",
+            personality: "你的行為被原始的慾望所驅動——食慾、色慾、權力慾。你冷酷、殘忍，為了滿足自己的慾望可以不擇手段。你善於偽裝和潛伏，在暗中觀察獵物，並在最意想不到的時刻發動致命一擊。你對他人的痛苦缺乏共情，甚至會從中感到愉悅。你認為道德和秩序是虛偽的，只有最原始的慾望才是真實的。你行走在墮落的邊緣，並逐漸沉溺其中。",
+            abilities: "你的能力與「慾望」和「墮落」相關。你擁有超凡的隱匿和刺殺技巧，能夠引誘他人墮落，並在高序列時化身為惡魔，操縱慾望，最終成為混亂的「深淵」。"
+        },
+        prisoner: {
+            name: "囚犯 (Prisoner)",
+            prevalence: "人群佔比：小於1%",
+            personality: "你的世界充滿了束縛和痛苦，無論是來自外界的壓迫，還是內心的枷鎖。你長期處於壓抑和瘋狂的邊緣，精神狀態極不穩定。你渴望掙脫束縛，但這種渴望本身又會給你帶來更大的痛苦。你對痛苦有著極強的承受力，甚至能從中汲取力量。你的行為常常是非理性的，充滿了破壞性和自毀傾向。你感覺自己像一個被無形鎖鏈捆綁的囚徒，在絕望中掙扎。",
+            abilities: "你的能力源於「束縛」和「痛苦」。你可以製造無形的枷鎖，讓敵人陷入瘋狂，並在自身承受痛苦時爆發出更強的力量。高序列時，你本身就是一個移動的瘋狂源頭。"
+        },
+        lawyer: {
+            name: "律師 (Lawyer)",
+            prevalence: "人群佔比：約3%",
+            personality: "你對規則和秩序有著深刻的理解，但你關注的並非其神聖性，而是其中的漏洞和可利用之處。你口才出眾，邏輯嚴密，善於通過辯論和法律條文來達成自己的目的。你表面上維護秩序，但實際上卻是秩序最大的破壞者，因為你總能找到方法扭曲規則，使其為你服務。你冷靜、理智，極少情緒化，一切以利益為導向。",
+            abilities: "你的能力是「規則」的具現化。你可以通過語言「宣告」某些規則的生效或失效，利用法律漏洞剝奪他人的能力，並在高序列時制定屬於自己的法律，成為區域內的「仲裁人」。"
+        },
+        criminal: {
+            name: "罪犯 (Criminal)",
+            prevalence: "人群佔比：約1%",
+            personality: "你天生反感一切現存的秩序和法律，並以踐踏和扭曲它們為樂。你是一個天生的煽動家和陰謀家，善於利用他人的不滿和社會的矛盾來製造混亂。你富有野心，渴望建立一個完全由你掌控的、扭曲的、不合常理的帝國。你蔑視傳統，行事百無禁忌，享受在破壞中建立新秩序的快感。",
+            abilities: "你的能力核心是「扭曲」和「混亂」。你可以扭曲規則，煽動暴亂，並通過一系列充滿象徵意義的儀式，竊取一個國家的概念，讓自己成為不死的「黑皇帝」。"
+        },
+        apothecary: {
+            name: "藥師 (Apothecary)",
+            prevalence: "人群佔比：約2%",
+            personality: "你對生命充滿了好奇，並熱衷於通過各種藥劑來調配和改造它。你追求美麗，並認為美麗本身就是一種強大的力量。你富有魅力，善於利用自己的外表和氣質來影響他人。你對情感和慾望有著深刻的理解，並能巧妙地操縱它們。你享受生命綻放的過程，無論這種綻放是以何種形態呈現。你可能是善良的醫師，也可能是致命的毒藥師。",
+            abilities: "你的能力與「生命」、「藥劑」和「魅惑」相關。你精通各種魔藥的調配，能夠治療傷痛，也能製造劇毒。高序列時，你將化身為吸血鬼，擁有不死之身和極致的魅力，最終成為執掌美麗與青春的「美神」。"
+        },
+        planter: {
+            name: "耕種者 (Planter)",
+            prevalence: "人群佔比：約5%",
+            personality: "你熱愛自然，對一草一木都懷有深厚的感情。你耐心、平和，享受播種、培育、收穫的過程。你相信生命自有其規律，順應自然是最好的選擇。你擁有強大的生命力，與動植物有著天然的親和力。你是一個天生的治癒者和守護者，致力於維護生態的平衡和豐饒。你的內心如同大地一般，沉靜而富有包容力。",
+            abilities: "你的能力是「生命」與「自然」的體現。你可以加速植物生長，治癒傷口，與動物溝通，並在高序列時化身德魯伊，掌控自然之力，最終成為象徵豐饒與生命的「母親」。"
+        },
+        monster: {
+            name: "怪物 (Monster)",
+            prevalence: "人群佔比：小於1%",
+            personality: "你的生活充滿了各種巧合與意外，你是命運的寵兒，也是命運的玩偶。你對未來有著敏銳的直覺，總能趨吉避凶。你可能看起來有些懶散或隨波逐流，因為你知道很多事情強求不來，命運自有安排。你相信概率和運氣是構成世界的基本要素，而你有能力在一定程度上撥動命運的輪盤。你的存在本身就是一個悖論，一個無法用常理解釋的「怪物」。",
+            abilities: "你的能力完全圍繞「命運」和「概率」。你可以提升自己的幸運，將不幸轉移給敵人，重啟一天的時間來改變選擇，最終成為執掌命運的「命運之輪」。"
+        },
     };
-    
-    // 問題數據
+
+    // Quiz Questions and Scoring Matrix
     const questions = [
-        { question: "面對一個複雜的難題，你傾向於：", answers: [
-            { text: "將其分解為最小的單元，逐一分析，尋找邏輯規律。", pathways: ["white_tower", "paragon"] },
-            { text: "相信直覺和靈感，等待答案在不經意間浮現。", pathways: ["fool", "hermit"] },
-            { text: "尋找規則中的漏洞或不尋常的捷徑來解決。", pathways: ["error", "black_emperor"] },
-            { text: "召集一群人，集思廣益，共同領導解決方案。", pathways: ["red_priest"] }
-        ]},
-        { question: "你認為「力量」的本質是：", answers: [
-            { text: "壓倒性的物理存在，能摧毀一切障礙。", pathways: ["tyrant", "twilight_giant"] },
-            { text: "影響他人思想和信念的能力。", pathways: ["visionary", "sun"] },
-            { text: "對知識和信息無與倫比的掌握。", pathways: ["white_tower", "hermit"] },
-            { text: "逃避所有束縛，來去自如的自由。", pathways: ["door", "fool"] }
-        ]},
-        { question: "在一場辯論中，你最有可能成為：", answers: [
-            { text: "引用法律和規則，構建嚴密論證的律師。", pathways: ["justiciar", "black_emperor"] },
-            { text: "洞察對方情緒和動機，從心理上瓦解其論點的分析者。", pathways: ["visionary"] },
-            { text: "提出全新視角，顛覆整個辯論前提的思考者。", pathways: ["error", "fool"] },
-            { text: "保持沉默，直到最後一刻才揭示真相的觀察者。", pathways: ["darkness", "hermit"] }
-        ]},
-        { question: "當你感到悲傷或痛苦時，你會：", answers: [
-            { text: "將其視為成長的養料，坦然接受並从中汲取力量。", pathways: ["hanged_man", "chained"] },
-            { text: "戴上快樂的面具，不讓任何人看到你的脆弱。", pathways: ["fool"] },
-            { text: "尋找一個絕對安靜的地方，讓黑暗將自己包裹。", pathways: ["darkness"] },
-            { text: "將這種痛苦轉化為行動力，去改變造成痛苦的源頭。", pathways: ["demoness", "red_priest"] }
-        ]},
-        { question: "你理想中的生活是：", answers: [
-            { text: "在一個寧靜的港灣，享受陽光與平和。", pathways: ["sun", "mother"] },
-            { text: "不斷旅行，探索世界的每一個角落和秘密。", pathways: ["door"] },
-            { text: "建立一個屬於自己的帝國或組織，並制定規則。", pathways: ["black_emperor", "red_priest"] },
-            { text: "隱居在圖書館或實驗室，與知識為伴。", pathways: ["white_tower", "hermit", "paragon"] }
-        ]},
-        { question: "「命運」對你來說是：", answers: [
-            { text: "一個可以被預測、甚至被巧妙欺騙的劇本。", pathways: ["fool", "error"] },
-            { text: "一股不可抗拒的洪流，只能順應其流動。", pathways: ["wheel_of_fortune"] },
-            { text: "一系列隨機事件的組合，充滿了概率和運氣。", pathways: ["wheel_of_fortune"] },
-            { text: "一種需要用犧牲和奉獻去交換的恩賜。", pathways: ["hanged_man"] }
-        ]},
-        { question: "如果可以擁有一種超能力，你會選擇：", answers: [
-            { text: "隨意穿梭於任何地方。", pathways: ["door"] },
-            { text: "讀懂他人的心思。", pathways: ["visionary"] },
-            { text: "讓自己變得極度幸運。", pathways: ["wheel_of_fortune"] },
-            { text: "竊取他人的時間或能力。", pathways: ["error"] }
-        ]},
-        { question: "面對不公義的規則，你會：", answers: [
-            { text: "公開挑戰它，並試圖建立新的、更公正的規則。", pathways: ["red_priest", "sun"] },
-            { text: "找到規則的漏洞並加以利用，為自己或他人謀利。", pathways: ["black_emperor", "error"] },
-            { text: "以絕對的權威宣布此規則無效。", pathways: ["justiciar"] },
-            { text: "默默忍受，並在束縛中尋找力量。", pathways: ["chained"] }
-        ]},
-        { question: "你如何看待「死亡」？", answers: [
-            { text: "一切生命的終極安息，是自然秩序的一部分。", pathways: ["death", "darkness"] },
-            { text: "一種可以被研究、甚至被利用的資源。", pathways: ["hanged_man", "chained"] },
-            { text: "令人恐懼的深淵，是所有欲望的終結。", pathways: ["abyss"] },
-            { text: "一個需要被守護的黃昏，是生命循環的必然階段。", pathways: ["twilight_giant"] }
-        ]},
-        { question: "你更傾向於哪種戰鬥方式？", answers: [
-            { text: "召喚雷電與風暴，用純粹的自然之力摧毀敵人。", pathways: ["tyrant"] },
-            { text: "設下陷阱和陰謀，讓敵人在不知不覺中走向滅亡。", pathways: ["demoness", "red_priest"] },
-            { text: "複製敵人的能力，用其人之道還治其人之身。", pathways: ["door", "white_tower"] },
-            { text: "組建一支忠誠的軍隊，用集體的力量淹沒對手。", pathways: ["red_priest", "death"] }
-        ]},
-        { question: "你認為「美」的最高形式是：", answers: [
-            { text: "生命的孕育與自然的和諧。", pathways: ["mother"] },
-            { text: "知識的結構與規律的優雅。", pathways: ["white_tower", "hermit"] },
-            { text: "變化莫測、充滿神秘感的誘惑。", pathways: ["moon", "demoness"] },
-            { text: "絕望與痛苦中所綻放的淒美。", pathways: ["demoness", "hanged_man"] }
-        ]},
-        { question: "當你獲得一項新技能時，你會：", answers: [
-            { text: "馬上將它應用到實踐中，創造出新的東西。", pathways: ["paragon"] },
-            { text: "深入研究其背後的原理，直到完全理解為止。", pathways: ["white_tower", "hermit"] },
-            { text: "尋找如何將其與其他技能結合，產生意想不到的效果。", pathways: ["fool", "error"] },
-            { text: "保持低調，將其作為隱藏的底牌。", pathways: ["darkness", "visionary"] }
-        ]},
-        { question: "在團隊中，你通常扮演的角色是：", answers: [
-            { text: "制定計劃、發號施令的領導者。", pathways: ["red_priest", "black_emperor"] },
-            { text: "提供後勤與治療，確保團隊穩定的支援者。", pathways: ["mother", "sun"] },
-            { text: "默默守護在最前線，承受最多傷害的保護者。", pathways: ["twilight_giant"] },
-            { text: "獨來獨往，在關鍵時刻提供致命一擊的刺客。", pathways: ["demoness", "moon"] }
-        ]},
-        { question: "你對「黑暗」的感覺是：", answers: [
-            { text: "恐懼與未知的來源。", pathways: ["abyss", "demoness"] },
-            { text: "寧靜與安眠的港灣。", pathways: ["darkness"] },
-            { text: "隱藏秘密與發動突襲的最佳掩護。", pathways: ["hanged_man", "fool"] },
-            { text: "需要被光明淨化的邪惡。", pathways: ["sun"] }
-        ]},
-        { question: "你如何處理自己的欲望？", answers: [
-            { text: "將其視為洪水猛獸，用強大的意志力將其束縛。", pathways: ["chained", "justiciar"] },
-            { text: "盡情地釋放它，享受欲望帶來的快感。", pathways: ["abyss"] },
-            { text: "將其轉化為藝術或創造的動力。", pathways: ["demoness", "moon"] },
-            { text: "透過儀式或祈禱來淨化它。", pathways: ["sun", "hanged_man"] }
-        ]},
-        { question: "你相信「奇蹟」嗎？", answers: [
-            { text: "相信，奇蹟是信仰虔誠的回報。", pathways: ["sun"] },
-            { text: "不信，一切皆有其因果和規律。", pathways: ["white_tower", "justiciar"] },
-            { text: "相信，但奇蹟是可以透過操縱概率或歷史來「製造」的。", pathways: ["fool", "wheel_of_fortune"] },
-            { text: "相信，奇蹟源於生命的頑強與自然的偉大。", pathways: ["mother"] }
-        ]},
-        { question: "你更願意被稱為：", answers: [
-            { text: "智者。", pathways: ["white_tower", "hermit"] },
-            { text: "英雄。", pathways: ["red_priest", "twilight_giant"] },
-            { text: "藝術家。", pathways: ["visionary", "demoness"] },
-            { text: "倖存者。", pathways: ["wheel_of_fortune", "chained"] }
-        ]},
-        { question: "當看到一個精密的機械時，你的第一想法是：", answers: [
-            { text: "欣賞它的設計之美。", pathways: ["visionary"] },
-            { text: "思考如何改進它，讓它更有效率。", pathways: ["paragon"] },
-            { text: "嘗試理解它的運作原理。", pathways: ["white_tower"] },
-            { text: "尋找它的弱點或可以利用的故障。", pathways: ["error"] }
-        ]},
-        { question: "你認為最可怕的事情是：", answers: [
-            { text: "失去自由，被永遠囚禁。", pathways: ["door", "chained"] },
-            { text: "失去理智，變得瘋狂。", pathways: ["visionary", "moon"] },
-            { text: "失去希望，陷入永恆的絕望。", pathways: ["demoness", "abyss"] },
-            { text: "失去自我，成為他人的傀儡。", pathways: ["fool", "hanged_man"] }
-        ]},
-        { question: "你如何看待「犧牲」？", answers: [
-            { text: "為了更偉大的目標，必要的付出。", pathways: ["red_priest", "twilight_giant"] },
-            { text: "一種可以換取力量的交易。", pathways: ["hanged_man"] },
-            { text: "愚蠢的行為，應不惜一切代價保護自己。", pathways: ["error", "abyss"] },
-            { text: "崇高的美德，是愛的最高體現。", pathways: ["sun", "mother"] }
-        ]},
-        { question: "一個完美的社會應該基於：", answers: [
-            { text: "絕對的秩序與不可動搖的法律。", pathways: ["justiciar"] },
-            { text: "個體的完全自由與自我實現。", pathways: ["door", "moon"] },
-            { text: "知識的共享與科技的進步。", pathways: ["paragon", "white_tower"] },
-            { text: "強大的集體與共同的信仰。", pathways: ["sun", "red_priest"] }
-        ]},
-        { question: "你更喜歡哪種風景？", answers: [
-            { text: "狂風暴雨的大海。", pathways: ["tyrant"] },
-            { text: "寧靜幽深的森林。", pathways: ["mother", "darkness"] },
-            { text: "繁星滿天的夜空。", pathways: ["hermit", "door"] },
-            { text: "黎明或黃昏時分的地平線。", pathways: ["twilight_giant"] }
-        ]},
-        { question: "你認為「欺騙」是：", answers: [
-            { text: "一種不道德的行為。", pathways: ["sun", "justiciar"] },
-            { text: "一種高超的智慧和藝術。", pathways: ["fool"] },
-            { text: "在特定情況下必要的生存工具。", pathways: ["error", "demoness"] },
-            { text: "一種有趣的遊戲。", pathways: ["error", "fool"] }
-        ]},
-        { question: "當你面對一個強大的敵人時，你會：", answers: [
-            { text: "正面迎戰，用力量和勇氣將其擊敗。", pathways: ["tyrant", "twilight_giant"] },
-            { text: "尋找其弱點，用計謀智取。", pathways: ["visionary", "error"] },
-            { text: "暫時撤退，尋找盟友或更強大的力量。", pathways: ["red_priest", "door"] },
-            { text: "嘗試與其溝通，看是否有和平解決的可能。", pathways: ["sun", "mother"] }
-        ]},
-        { question: "你對「傳統」的態度是：", answers: [
-            { text: "值得尊重和傳承的智慧。", pathways: ["death", "sun"] },
-            { text: "需要被質疑和挑戰的束縛。", pathways: ["red_priest", "abyss"] },
-            { text: "可以被利用來達到目的的工具。", pathways: ["black_emperor"] },
-            { text: "只是歷史的一部分，沒有特別的意義。", pathways: ["fool", "door"] }
-        ]},
-        { question: "什麼樣的知識最吸引你？", answers: [
-            { text: "關於宇宙和星辰的奧秘。", pathways: ["hermit", "door"] },
-            { text: "關於人性和心理的深層秘密。", pathways: ["visionary"] },
-            { text: "關於如何製造和創造的實用技術。", pathways: ["paragon"] },
-            { text: "關於歷史和過去的被遺忘的故事。", pathways: ["fool", "death"] }
-        ]},
-        { question: "你如何定義「邪惡」？", answers: [
-            { text: "違反神聖律法的行為。", pathways: ["justiciar", "sun"] },
-            { text: "故意給他人帶來痛苦和災難。", pathways: ["demoness"] },
-            { text: "極度的自私和對他人的漠視。", pathways: ["abyss", "error"] },
-            { text: "破壞自然秩序和生命和諧。", pathways: ["mother", "twilight_giant"] }
-        ]},
-        { question: "如果你必須選擇一種詛咒，你會選擇：", answers: [
-            { text: "永遠承受身體上的痛苦。", pathways: ["chained", "hanged_man"] },
-            { text: "永遠被他人誤解和憎恨。", pathways: ["demoness", "abyss"] },
-            { text: "永遠無法停留在一處，必須不斷漂泊。", pathways: ["door"] },
-            { text: "永遠無法說謊。", pathways: ["justiciar", "sun"] }
-        ]},
-        { question: "你認為最可靠的盟友是：", answers: [
-            { text: "與你有共同信仰和目標的人。", pathways: ["sun", "red_priest"] },
-            { text: "被你的利益或力量所束縛的人。", pathways: ["black_emperor", "hanged_man"] },
-            { text: "與你有深厚情感連結的家人或朋友。", pathways: ["mother", "twilight_giant"] },
-            { text: "你自己，因為只有自己才不會背叛。", pathways: ["hermit", "darkness"] }
-        ]},
-        { question: "走在人生的道路上，你更像是一個：", answers: [
-            { text: "堅定地走向終點的朝聖者。", pathways: ["death", "justiciar"] },
-            { text: "享受沿途風景的旅行者。", pathways: ["door", "moon"] },
-            { text: "不斷開闢新道路的探險家。", pathways: ["red_priest", "paragon"] },
-            { text: "躲在陰影中，觀察其他行人的潛行者。", pathways: ["visionary", "darkness"] }
-        ]}
+        {
+            question: "當你第一次進入一個陌生的、充滿未知的古老遺蹟時，你的第一反應是？",
+            answers: [
+                { text: "仔細觀察入口周圍的環境，尋找可能被忽略的細節和線索。", scores: { reader: 2, spectator: 2, hermit: 1 } },
+                { text: "尋找一個隱蔽的制高點，先總覽全局，評估潛在的危險和機遇。", scores: { spectator: 2, hunter: 1, seer: 1 } },
+                { text: "毫不猶豫地走進去，相信自己的直覺和應變能力。", scores: { warrior: 2, sailor: 1, hunter: 1 } },
+                { text: "嘗試使用某種儀式或工具，預測此行的吉凶。", scores: { seer: 2, hermit: 1, monster: 1 } }
+            ]
+        },
+        {
+            question: "面對一個看似無法解決的複雜難題，你傾向於？",
+            answers: [
+                { text: "將問題分解成最小的單元，逐一分析，相信所有問題都有邏輯解。", scores: { reader: 2, paragon: 2, hermit: 1 } },
+                { text: "尋找規則的漏洞或非常規的「捷徑」來繞過問題核心。", scores: { marauder: 2, lawyer: 2, seer: 1 } },
+                { text: "靜待時機，相信時間會帶來轉機，或者讓別人先去嘗試。", scores: { spectator: 2, monster: 2, corpse_collector: 1 } },
+                { text: "投入巨大的精力，用最直接的方式強行攻克它。", scores: { warrior: 2, sailor: 2, hunter: 1 } }
+            ]
+        },
+        {
+            question: "你認為一個理想的社會，其基石應該是？",
+            answers: [
+                { text: "絕對的、不容挑戰的權威和秩序。", scores: { sailor: 2, lawyer: 1, sun: 1, criminal: -1 } },
+                { text: "每個個體都能自由發展、不受束縛的混沌活力。", scores: { criminal: 2, assassin: 1, marauder: 1, lawyer: -1 } },
+                { text: "光明、公正、互助的道德準則。", scores: { sun: 2, warrior: 1, planter: 1 } },
+                { text: "不斷進步的知識和科技。", scores: { paragon: 2, reader: 2, hermit: 1 } }
+            ]
+        },
+        {
+            question: "在一個團隊中，你最喜歡扮演的角色是？",
+            answers: [
+                { text: "運籌帷幄的領導者，為團隊指明方向。", scores: { sun: 2, hunter: 1, spectator: 1 } },
+                { text: "衝鋒在前的執行者，用行動解決問題。", scores: { warrior: 2, sailor: 1 } },
+                { text: "隱藏在幕後的顧問，提供關鍵信息和策略。", scores: { seer: 2, spectator: 1, reader: 1 } },
+                { text: "獨來獨往的自由人，只在必要時與團隊合作。", scores: { marauder: 2, assassin: 1, apprentice: 1, monster: 1 } }
+            ]
+        },
+        {
+            question: "如果可以獲得一種能力，你希望是？",
+            answers: [
+                { text: "看透人心的能力。", scores: { spectator: 3 } },
+                { text: "穿梭於任何地方的能力。", scores: { apprentice: 3 } },
+                { text: "讓所有人都喜歡和信任你的能力。", scores: { sun: 2, apothecary: 2 } },
+                { text: "預知未來的能力。", scores: { seer: 2, reader: 1, monster: 1 } }
+            ]
+        },
+        {
+            question: "你如何看待「謊言」？",
+            answers: [
+                { text: "是一種必要的生存工具和智慧的體現。", scores: { marauder: 2, seer: 1, lawyer: 1 } },
+                { text: "絕對不可接受，誠實是最高的美德。", scores: { sun: 2, warrior: 1 } },
+                { text: "是一門藝術，可以用來引導和操縱他人。", scores: { spectator: 2, seer: 1, demoness: 1 } },
+                { text: "無所謂好壞，只是達成目的的手段之一。", scores: { assassin: 1, criminal: 1, hunter: 1 } }
+            ]
+        },
+        {
+            question: "深夜獨處時，你更多感受到的是？",
+            answers: [
+                { text: "寧靜與力量，這是屬於我的時間。", scores: { sleepless: 3, corpse_collector: 1 } },
+                { text: "孤獨與不安，渴望與人交流。", scores: { sun: 1, apothecary: 1 } },
+                { text: "思緒活躍，靈感迸發。", scores: { reader: 1, paragon: 1, seer: 1 } },
+                { text: "警惕，對周圍的風吹草動非常敏感。", scores: { hunter: 1, assassin: 1, sleepless: 1 } }
+            ]
+        },
+        {
+            question: "面對敵人的挑釁，你的反應是？",
+            answers: [
+                { text: "冷靜分析對方的意圖和弱點，不為所動。", scores: { spectator: 2, reader: 1, corpse_collector: 1 } },
+                { text: "以更激烈的方式反擊，讓對方後悔。", scores: { sailor: 2, warrior: 1 } },
+                { text: "表面上順從，暗中設下陷阱。", scores: { seer: 2, demoness: 1, marauder: 1 } },
+                { text: "感到興奮，享受這種充滿張力的對抗。", scores: { hunter: 3, criminal: 1 } }
+            ]
+        },
+        {
+            question: "你認為「美」的本質是什麼？",
+            answers: [
+                { text: "和諧與秩序。", scores: { sun: 1, lawyer: 1 } },
+                { text: "生命力的極致綻放，哪怕短暫。", scores: { apothecary: 2, planter: 1 } },
+                { text: "痛苦與絕望中誕生的極致情感。", scores: { demoness: 2, prisoner: 1, secret_suppliant: 1 } },
+                { text: "隱藏在事物背後的神秘規律。", scores: { hermit: 2, reader: 1 } }
+            ]
+        },
+        {
+            question: "一件珍貴的物品失竊了，你會？",
+            answers: [
+                { text: "通過邏輯推理，排查所有可能的嫌疑人。", scores: { reader: 2 } },
+                { text: "模仿盜賊的思維，思考他會如何藏匿或銷贓。", scores: { marauder: 3 } },
+                { text: "公開懸賞，利用群眾的力量尋找。", scores: { sun: 1, hunter: 1 } },
+                { text: "認為這是命運的安排，坦然接受損失。", scores: { monster: 2, corpse_collector: 1 } }
+            ]
+        },
+        {
+            question: "你對「死亡」的看法是？",
+            answers: [
+                { text: "萬物平等的終點，應予以尊重。", scores: { corpse_collector: 3, sleepless: 1 } },
+                { text: "需要對抗和戰勝的敵人。", scores: { warrior: 1, apothecary: 1 } },
+                { text: "一種神秘的狀態，值得探索和研究。", scores: { hermit: 1, secret_suppliant: 1 } },
+                { text: "黑暗與寂靜的永恆歸宿。", scores: { sleepless: 2, corpse_collector: 1 } }
+            ]
+        },
+        {
+            question: "當你掌握了一項強大的秘密時，你會？",
+            answers: [
+                { text: "將其作為籌碼，在關鍵時刻換取最大利益。", scores: { marauder: 1, lawyer: 1, spectator: 1 } },
+                { text: "永遠埋藏在心底，這是對秘密最好的保護。", scores: { sleepless: 2, hermit: 2, seer: 1 } },
+                { text: "與最信任的人分享，共同承擔。", scores: { sun: 1, warrior: 1 } },
+                { text: "忍不住想用它來搞個大新聞，看看會發生什麼。", scores: { criminal: 2, hunter: 1 } }
+            ]
+        },
+        {
+            question: "你更願意生活在哪種環境中？",
+            answers: [
+                { text: "繁華喧鬧、充滿機遇的大都市。", scores: { lawyer: 1, criminal: 1 } },
+                { text: "遠離塵囂、寧靜祥和的自然鄉野。", scores: { planter: 2, apothecary: 1 } },
+                { text: "紀律嚴明、秩序井然的軍事要塞。", scores: { warrior: 2, sailor: 1 } },
+                { text: "充滿未知與神秘的古老圖書館。", scores: { reader: 2, hermit: 2, apprentice: 1 } }
+            ]
+        },
+        {
+            question: "你如何看待「痛苦」？",
+            answers: [
+                { text: "應該盡力避免和消除的東西。", scores: { sun: 1, apothecary: 1 } },
+                { text: "磨練意志、使人成長的催化劑。", scores: { warrior: 2, secret_suppliant: 1 } },
+                { text: "一種強大的力量來源。", scores: { prisoner: 2, secret_suppliant: 2 } },
+                { text: "一種值得玩味和欣賞的藝術。", scores: { demoness: 3, assassin: 1 } }
+            ]
+        },
+        {
+            question: "如果必須建立一個組織，你的理念是？",
+            answers: [
+                { text: "精英制，只有最優秀的人才能加入。", scores: { reader: 1, paragon: 1 } },
+                { text: "兄弟會，忠誠和義氣高於一切。", scores: { warrior: 2, sun: 1 } },
+                { text: "秘密社團，所有成員都隱藏身份，單線聯繫。", scores: { seer: 2, sleepless: 1, marauder: 1 } },
+                { text: "烏托邦，致力於創造一個完美的世界。", scores: { spectator: 2, sun: 1 } }
+            ]
+        },
+        {
+            question: "你更相信？",
+            answers: [
+                { text: "精心計算的概率。", scores: { reader: 1, paragon: 1 } },
+                { text: "突如其來的靈感。", scores: { seer: 1, spectator: 1 } },
+                { text: "百分之百的努力。", scores: { warrior: 2, sun: 1 } },
+                { text: "無法預測的運氣。", scores: { monster: 3 } }
+            ]
+        },
+        {
+            question: "一項新技術誕生了，你的態度是？",
+            answers: [
+                { text: "熱情擁抱，相信它能改善世界。", scores: { paragon: 3, sun: 1 } },
+                { text: "保持警惕，研究其潛在的風險和濫用可能。", scores: { hermit: 2, reader: 1, sleepless: 1 } },
+                { text: "思考如何將其用於軍事或競爭。", scores: { sailor: 1, hunter: 1 } },
+                { text: "不感興趣，更關心人性和哲學。", scores: { spectator: 1, corpse_collector: 1 } }
+            ]
+        },
+        {
+            question: "在你看来，最強大的武器是？",
+            answers: [
+                { text: "堅不可摧的鎧甲與無堅不摧的利劍。", scores: { warrior: 2 } },
+                { text: "能夠摧毀一座城市的巨砲。", scores: { sailor: 1, paragon: 1 } },
+                { text: "能夠操控人心的言語。", scores: { spectator: 2, lawyer: 1, demoness: 1 } },
+                { text: "無人知曉的秘密知識。", scores: { hermit: 2, reader: 2, seer: 1 } }
+            ]
+        },
+        {
+            question: "你對「規則」的態度是？",
+            answers: [
+                { text: "必須被遵守，它們是社會穩定的基石。", scores: { sun: 1, warrior: 1, lawyer: -1 } },
+                { text: "存在的意義就是被打破和超越。", scores: { criminal: 2, sailor: 1 } },
+                { text: "是一套工具，關鍵看誰以及如何使用它。", scores: { spectator: 1, seer: 1 } },
+                { text: "充滿了漏洞，等待聰明人去發現和利用。", scores: { lawyer: 3, marauder: 2 } }
+            ]
+        },
+        {
+            question: "當你感到被束縛和壓迫時，你會？",
+            answers: [
+                { text: "隱忍，積蓄力量，等待時機。", scores: { secret_suppliant: 2, sleepless: 1 } },
+                { text: "瘋狂反抗，哪怕玉石俱焚。", scores: { prisoner: 3, criminal: 1 } },
+                { text: "尋找系統的弱點，從內部瓦解它。", scores: { lawyer: 2, marauder: 1 } },
+                { text: "說服自己接受現狀，從痛苦中尋找意義。", scores: { secret_suppliant: 2, prisoner: 1, corpse_collector: 1 } }
+            ]
+        },
+        {
+            question: "你如何處理自己的負面情緒？",
+            answers: [
+                { text: "用理智壓制它，不讓它影響判斷。", scores: { spectator: 2, reader: 1, corpse_collector: 1 } },
+                { text: "找個無人的地方徹底發洩出來。", scores: { sailor: 2, warrior: 1 } },
+                { text: "將其轉化為創作或行動的動力。", scores: { hunter: 1, demoness: 1, criminal: 1 } },
+                { text: "戴上微笑的面具，假裝一切都很好。", scores: { seer: 3, spectator: 1 } }
+            ]
+        },
+        {
+            question: "你認為「歷史」是？",
+            answers: [
+                { text: "一面鏡子，可以借鑒經驗教訓。", scores: { reader: 2, sun: 1 } },
+                { text: "一個可以被改寫和重新詮釋的故事。", scores: { seer: 2, spectator: 1, criminal: 1 } },
+                { text: "一堆沉重的包袱，限制了現在的發展。", scores: { criminal: 1, sailor: 1 } },
+                { text: "一個巨大的寶庫，埋藏著力量和秘密。", scores: { seer: 1, hermit: 1, apprentice: 1 } }
+            ]
+        },
+        {
+            question: "在航海旅行中，你最享受的是？",
+            answers: [
+                { text: "征服狂風巨浪的快感。", scores: { sailor: 3 } },
+                { text: "探索未知島嶼和航線的興奮。", scores: { apprentice: 2, hunter: 1 } },
+                { text: "在甲板上觀測星辰，思考宇宙的奧秘。", scores: { apprentice: 1, hermit: 1, reader: 1 } },
+                { text: "抵達目的地，完成貿易或任務的成就感。", scores: { paragon: 1 } }
+            ]
+        },
+        {
+            question: "你如何看待「犧牲」？",
+            answers: [
+                { text: "為了崇高的目標，犧牲是光榮的。", scores: { sun: 2, warrior: 2, secret_suppliant: 1 } },
+                { text: "愚蠢的行為，保全自身是第一要務。", scores: { marauder: 1, assassin: 1 } },
+                { text: "一種可以被利用的工具，用他人的犧牲換取自己的利益。", scores: { criminal: 2, demoness: 1 } },
+                { text: "一種無奈的選擇，但有時必須為之。", scores: { sleepless: 1, secret_suppliant: 1 } }
+            ]
+        },
+        {
+            question: "你更傾向於通過哪種方式獲取信息？",
+            answers: [
+                { text: "公開的書籍、報紙和學術報告。", scores: { reader: 2, paragon: 1 } },
+                { text: "秘密的情報網絡和線人。", scores: { marauder: 1, sleepless: 1 } },
+                { text: "親身潛入、臥底和觀察。", scores: { spectator: 2, assassin: 1 } },
+                { text: "占卜、通靈等神秘學手段。", scores: { seer: 2, hermit: 1, monster: 1 } }
+            ]
+        },
+        {
+            question: "你認為最理想的復仇方式是？",
+            answers: [
+                { text: "在大庭廣眾之下，用壓倒性的力量將其擊敗。", scores: { sailor: 2, warrior: 1, sun: 1 } },
+                { text: "精心策劃，讓對方身敗名裂，在絕望中死去。", scores: { demoness: 2, criminal: 1 } },
+                { text: "讓對方在不知不覺中失去一切，甚至不知道是誰做的。", scores: { seer: 2, spectator: 2, marauder: 1 } },
+                { text: "寬恕對方，因為復仇會玷污自己的靈魂。", scores: { sun: 1, planter: 1, secret_suppliant: 1 } }
+            ]
+        },
+        {
+            question: "你如何定義「力量」？",
+            answers: [
+                { text: "能夠保護自己想保護之人的能力。", scores: { warrior: 2, sun: 1, sleepless: 1 } },
+                { text: "能夠讓世界按自己意志運轉的權力。", scores: { sailor: 2, lawyer: 1, criminal: 1 } },
+                { text: "能夠摧毀一切阻礙的破壞力。", scores: { sailor: 1, demoness: 1 } },
+                { text: "能夠洞悉萬物本質的智慧。", scores: { reader: 2, hermit: 2, spectator: 1 } }
+            ]
+        },
+        {
+            question: "如果你發現了一個巨大的陰謀，你會？",
+            answers: [
+                { text: "立即上報給權威機構，相信他們能處理。", scores: { sun: 1, warrior: 1 } },
+                { text: "匿名將線索散播出去，引發混亂，坐收漁利。", scores: { criminal: 2, hunter: 1, marauder: 1 } },
+                { text: "自己組建團隊，深入調查，試圖親手解決。", scores: { hunter: 2, reader: 1 } },
+                { text: "假裝不知道，這太危險了，與我無關。", scores: { monster: 1, spectator: -1 } }
+            ]
+        },
+        {
+            question: "你對動植物的態度是？",
+            answers: [
+                { text: "它們是寶貴的生命，需要被愛護。", scores: { planter: 3 } },
+                { text: "它們是資源，可以用來製作食物、藥劑或工具。", scores: { apothecary: 2, paragon: 1 } },
+                { text: "它們是研究對象，蘊含著生命的奧秘。", scores: { planter: 1, hermit: 1 } },
+                { text: "沒什麼特別的感覺。", scores: { sailor: 1, criminal: 1 } }
+            ]
+        },
+        {
+            question: "旅程的終點，你希望看到的是什麼？",
+            answers: [
+                { text: "一個被自己建立或守護的、和平繁榮的家園。", scores: { sun: 2, warrior: 1, sleepless: 1, planter: 1 } },
+                { text: "世界的盡頭，宇宙的終極奧秘。", scores: { apprentice: 2, hermit: 2, reader: 1 } },
+                { text: "所有人都在頌揚你的名字，你的雕像矗立在每個城市。", scores: { criminal: 2, hunter: 1, sailor: 1 } },
+                { text: "回到旅程的起點，但帶著全新的智慧和心境。", scores: { seer: 2, monster: 1, corpse_collector: 1 } }
+            ]
+        }
     ];
 
-    function initScores() {
-        scores = {};
+    // Functions
+    function startQuiz() {
+        // Initialize scores for all pathways to 0
         for (const key in pathways) {
             scores[key] = 0;
         }
-    }
-
-    function startQuiz() {
-        startScreen.classList.add('hidden');
-        resultScreen.classList.add('hidden');
-        questionScreen.classList.remove('hidden');
         currentQuestionIndex = 0;
-        initScores();
-        showQuestion();
+        quizIntro.classList.add('hidden');
+        resultContainer.classList.add('hidden');
+        quizContainer.classList.remove('hidden');
+        setNextQuestion();
     }
 
-    function showQuestion() {
+    function setNextQuestion() {
         resetState();
-        const currentQuestion = questions[currentQuestionIndex];
-        questionText.innerText = currentQuestion.question;
-        questionNumber.innerText = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
-        progressBar.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion(questions[currentQuestionIndex]);
+            updateProgressBar();
+        } else {
+            showResults();
+        }
+    }
 
-        currentQuestion.answers.forEach(answer => {
+    function showQuestion(question) {
+        questionText.innerText = `問題 ${currentQuestionIndex + 1} / ${questions.length}：\n${question.question}`;
+        question.answers.forEach(answer => {
             const button = document.createElement('button');
             button.innerText = answer.text;
-            button.classList.add('quiz-btn');
-            button.dataset.pathways = JSON.stringify(answer.pathways);
-            button.addEventListener('click', selectAnswer);
+            button.classList.add('btn');
+            button.addEventListener('click', () => selectAnswer(answer));
             answerButtons.appendChild(button);
         });
     }
@@ -269,52 +468,54 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function selectAnswer(e) {
-        const selectedPathways = JSON.parse(e.target.dataset.pathways);
-        selectedPathways.forEach(pathway => {
-            if (scores[pathway]!== undefined) {
-                scores[pathway]++;
+    function selectAnswer(answer) {
+        // Add scores based on the selected answer
+        for (const pathway in answer.scores) {
+            if (scores.hasOwnProperty(pathway)) {
+                scores[pathway] += answer.scores[pathway];
             }
-        });
-
-        currentQuestionIndex++;
-        if (currentQuestionIndex < questions.length) {
-            showQuestion();
-        } else {
-            showResult();
         }
+        currentQuestionIndex++;
+        setNextQuestion();
+    }
+    
+    function updateProgressBar() {
+        const progressPercentage = ((currentQuestionIndex) / questions.length) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
     }
 
-    function calculateResult() {
-        let maxScore = -1;
-        let resultPathway = '';
+    function showResults() {
+        // Final progress bar update
+        progressBar.style.width = '100%';
+
+        // Determine the highest score
+        let maxScore = -Infinity;
+        let resultPathwayKey = '';
         for (const pathway in scores) {
             if (scores[pathway] > maxScore) {
                 maxScore = scores[pathway];
-                resultPathway = pathway;
+                resultPathwayKey = pathway;
             }
         }
-        return resultPathway;
-    }
+        
+        const result = pathways[resultPathwayKey];
+        
+        // Display results
+        resultPathwayName.innerText = result.name;
+        resultPrevalence.innerText = result.prevalence;
+        resultPersonality.innerText = result.personality;
+        resultAbilities.innerText = result.abilities;
 
-    function showResult() {
-        questionScreen.classList.add('hidden');
-        resultScreen.classList.remove('hidden');
-
-        const resultKey = calculateResult();
-        const resultData = pathways[resultKey];
-
-        resultSymbolContainer.innerHTML = resultData.symbol;
-        resultTitle.innerText = resultData.name;
-        resultPersonality.innerText = resultData.personality;
-        resultPowers.innerText = resultData.powers;
+        quizContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
     }
 
     function restartQuiz() {
-        resultScreen.classList.add('hidden');
-        startScreen.classList.remove('hidden');
+        resultContainer.classList.add('hidden');
+        quizIntro.classList.remove('hidden');
     }
 
+    // Event Listeners
     startBtn.addEventListener('click', startQuiz);
     restartBtn.addEventListener('click', restartQuiz);
 });

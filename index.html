@@ -3,56 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>詭秘之主：神之途徑心理測驗</title>
+    <title>詭秘神之途徑 心理測驗</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="main-container">
-        <header id="quiz-header">
-            <h1>神之途徑的神諭</h1>
-            <p class="subtitle">The Oracle of Ascension</p>
-            <div class="header-ornament"></div>
-        </header>
+    <div class="container">
+        <div id="quiz-intro">
+            <h1>詭秘神之途徑</h1>
+            <p>在蒸汽與機械的浪潮中，誰能觸及非凡？<br>在歷史和黑暗的迷霧裡，又是誰在耳語？<br><br>本測驗將通過30道問題，探測您的靈魂本質，<br>為您揭示最契合的非凡之路。<br><br>我們是守護者，也是一群時刻對抗著危險和瘋狂的可憐蟲。<br>請憑直覺作答。</p>
+            <button id="start-btn">開始占卜</button>
+        </div>
 
-        <main id="quiz-container">
-            <div id="start-screen">
-                <p>在踏上非凡的旅途之前，你必須先聆聽來自內心深處的低語。這三十個問題將如同一面鏡子，映照出你靈魂的底色。當你做出選擇時，請忠於你的第一直覺。命運的齒輪已經開始轉動，你的神座正靜候其主。</p>
-                <button id="start-btn" class="quiz-btn">開始占卜</button>
-            </div>
-
-            <div id="question-screen" class="hidden">
-                <div class="progress-container">
-                    <div id="progress-bar"></div>
-                </div>
-                <p id="question-number"></p>
+        <div id="quiz-container" class="hidden">
+            <div id="question-area">
                 <h2 id="question-text"></h2>
                 <div id="answer-buttons" class="btn-grid">
                     </div>
             </div>
-
-            <div id="result-screen" class="hidden">
-                <div class="result-card">
-                    <div id="result-symbol-container">
-                        </div>
-                    <h2 id="result-title"></h2>
-                    <h3 class="result-subtitle">人格原型</h3>
-                    <p id="result-personality"></p>
-                    <h3 class="result-subtitle">力量顯現</h3>
-                    <p id="result-powers"></p>
-                    <button id="restart-btn" class="quiz-btn">重新占卜</button>
-                </div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
             </div>
-        </main>
-        
-        <footer>
-            <div class="footer-ornament"></div>
-            <p>&copy; 2024 - A psychological instrument based on the world of "Lord of the Mysteries". For entertainment purposes only.</p>
-        </footer>
-    </div>
+        </div>
 
+        <div id="result-container" class="hidden">
+            <h2>你的命定途徑是：</h2>
+            <h1 id="result-pathway-name"></h1>
+            <p id="result-prevalence"></p>
+            <div class="result-section">
+                <h3>人格原型與扮演守則：</h3>
+                <p id="result-personality"></p>
+            </div>
+            <div class="result-section">
+                <h3>能力體現：</h3>
+                <p id="result-abilities"></p>
+            </div>
+            <button id="restart-btn">重新占卜</button>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
